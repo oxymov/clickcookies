@@ -193,22 +193,22 @@ let state = {
 
 // Upgrades (basic -> slower early game)
 const baseUpgrades = [
-  { id:'cursor', title:'Curseur', desc:'+0.05 CPS', baseCost:50, cps:0.03 },
-  { id:'farm', title:'Ferme', desc:'+0.4 CPS', baseCost:300, cps:0.2 },
-  { id:'factory', title:'Usine', desc:'+1.8 CPS', baseCost:5000, cps:1.2 },
-  { id:'clickMaster', title:'Main experte', desc:'+0.5 per click', baseCost:400, clickBonus:0.5 },
+  { id:'cursor', title:'Curseur', desc:'+0.1 CPS', baseCost:50, cps:0.1 },
+  { id:'farm', title:'Ferme', desc:'+0,5 CPS', baseCost:300, cps:0.5 },
+  { id:'factory', title:'Usine', desc:'+5 CPS', baseCost:5000, cps:5.0 },
+  { id:'clickMaster', title:'Main experte', desc:'+1 per click', baseCost:400, clickBonus:0.5 },
   { id:'multiplier', title:'Multiplicateur (clic)', desc:'Augmente la valeur du clic (achat par niveau)', baseCost:5000, isClickMult:true }
 ];
 
 // Tier 2: late game, très chers, gros CPS
 const tier2Upgrades = [
-  { id:'mine', title:'Mine', desc:'+6 CPS', baseCost:25000, cps:6 },
-  { id:'lab', title:'Laboratoire', desc:'+60 CPS', baseCost:250000, cps:60 },
+  { id:'mine', title:'Mine', desc:'+10 CPS', baseCost:25000, cps:10 },
+  { id:'lab', title:'Laboratoire', desc:'+100 CPS', baseCost:250000, cps:100 },
   { id:'reactor', title:'Réacteur', desc:'+1200 CPS', baseCost:3500000, cps:1200 },
   { id:'dimension', title:'Dimension', desc:'+25000 CPS', baseCost:50000000, cps:25000 },
   // auto-clickers (aide pour late game)
-  { id:'autoclick1', title:'Auto-click', desc:'Auto-click 10 cps', baseCost:90000, cps:10 },
-  { id:'autoclick2', title:'Hyper-click', desc:'Auto-click 50 cps', baseCost:900000, cps:50 }
+  { id:'autoclick1', title:'Auto-click', desc:'Auto-click 20 cps', baseCost:90000, cps:20 },
+  { id:'autoclick2', title:'Hyper-click', desc:'Auto-click 100 cps', baseCost:900000, cps:100 }
 ];
 
 // click multipliers levels (buyable via special shop entry)
