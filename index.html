@@ -59,13 +59,13 @@
     <div style="display:flex;align-items:center;gap:12px">
       <div class="logo">CC</div>
       <div>
-        <h1>Clicker — Édition Évolutive</h1>
+        <h1>Clicker — Par JeanJean</h1>
         <div style="font-size:13px;color:var(--muted)">Plus profond · Prestige utile · Tiers 2</div>
       </div>
     </div>
     <div style="display:flex;gap:8px;align-items:center">
       <div class="small">Auto-save</div>
-      <div class="small">Responsive</div>
+      <div class="small">En developpement</div>
     </div>
   </div>
 
@@ -131,8 +131,8 @@
     </div>
 
     <footer style="grid-column:1/-1">
-      <div>Fait avec ❤️ — Prototype</div>
-      <div style="color:var(--muted)">Astuce: héberge sur GitHub Pages et intègre en iframe dans Carrd</div>
+      <div>Fait avec ❤️ — Par Jean</div>
+      <div style="color:var(--muted)">Aide : N'hésitez pas à me faire savoir ce qui pourrait etre amélioré</div>
     </footer>
   </aside>
 </main>
@@ -193,9 +193,9 @@ let state = {
 
 // Upgrades (basic -> slower early game)
 const baseUpgrades = [
-  { id:'cursor', title:'Curseur', desc:'+0.03 CPS', baseCost:50, cps:0.03 },
-  { id:'farm', title:'Ferme', desc:'+0.2 CPS', baseCost:300, cps:0.2 },
-  { id:'factory', title:'Usine', desc:'+1.2 CPS', baseCost:5000, cps:1.2 },
+  { id:'cursor', title:'Curseur', desc:'+0.05 CPS', baseCost:50, cps:0.03 },
+  { id:'farm', title:'Ferme', desc:'+0.4 CPS', baseCost:300, cps:0.2 },
+  { id:'factory', title:'Usine', desc:'+1.8 CPS', baseCost:5000, cps:1.2 },
   { id:'clickMaster', title:'Main experte', desc:'+0.5 per click', baseCost:400, clickBonus:0.5 },
   { id:'multiplier', title:'Multiplicateur (clic)', desc:'Augmente la valeur du clic (achat par niveau)', baseCost:5000, isClickMult:true }
 ];
@@ -207,8 +207,8 @@ const tier2Upgrades = [
   { id:'reactor', title:'Réacteur', desc:'+1200 CPS', baseCost:3500000, cps:1200 },
   { id:'dimension', title:'Dimension', desc:'+25000 CPS', baseCost:50000000, cps:25000 },
   // auto-clickers (aide pour late game)
-  { id:'autoclick1', title:'Auto-click 🟢', desc:'Auto-click 10 cps', baseCost:90000, cps:10 },
-  { id:'autoclick2', title:'Hyper-click 🔵', desc:'Auto-click 50 cps', baseCost:900000, cps:50 }
+  { id:'autoclick1', title:'Auto-click', desc:'Auto-click 10 cps', baseCost:90000, cps:10 },
+  { id:'autoclick2', title:'Hyper-click', desc:'Auto-click 50 cps', baseCost:900000, cps:50 }
 ];
 
 // click multipliers levels (buyable via special shop entry)
@@ -539,9 +539,10 @@ function render(force=false){
 // Achievements (simple)
 const achievements = [
   { id:'firstClick', title:'Premier clic', condition: s => s.cumulativeTotal >= 1 },
-  { id:'hundred', title:'100 cookies cumulés', condition: s => s.cumulativeTotal >= 100 },
+  { id:'Débutant', title:'100 cookies cumulés', condition: s => s.cumulativeTotal >= 100 },
   { id:'tenK', title:'10k cumulés', condition: s => s.cumulativeTotal >= 10000 },
-  { id:'prestigeFirst', title:'Premier prestige', condition: s => s.prestige >= 1 }
+  { id:'GG', title:'100k cumulés', condition: s => s.cumulativeTotal >= 100000 },
+  { id:'Premierprestige', title:'Premier prestige', condition: s => s.prestige >= 1 }
 ];
 function checkAchievements(){
   achievements.forEach(a=>{
