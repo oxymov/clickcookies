@@ -3,79 +3,54 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Clicker — Prototype</title>
+<title>Clicker — Édition Évolutive</title>
 <style>
   :root{
-    --bg:#0f1720;
-    --panel:#0b1220aa;
+    --bg:#071021;
+    --panel:rgba(11,18,32,0.7);
     --accent:#7c5cff;
     --accent2:#3be0c6;
     --muted:#bfcbdc;
-    --glass: rgba(255,255,255,0.04);
+    --glass: rgba(255,255,255,0.03);
     --glass-strong: rgba(255,255,255,0.06);
     font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
   }
   *{box-sizing:border-box}
-  html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#06101a);color:var(--muted);-webkit-font-smoothing:antialiased}
+  html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#03101a);color:var(--muted);-webkit-font-smoothing:antialiased}
   .wrap{
-    max-width:1100px;margin:28px auto;padding:20px;display:grid;grid-template-columns:1fr 360px;gap:18px;
+    max-width:1100px;margin:24px auto;padding:18px;display:grid;grid-template-columns:1fr 380px;gap:16px;
   }
-  @media (max-width:880px){ .wrap{grid-template-columns:1fr; padding:12px} .right{order:2} }
-  header{display:flex;align-items:center;gap:14px;margin-bottom:8px}
-  .logo{
-    width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:700;color:white;box-shadow:0 6px 20px rgba(0,0,0,0.4);
-  }
+  @media (max-width:900px){ .wrap{grid-template-columns:1fr; padding:12px} .right{order:2} }
+  header{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+  .logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:700;color:white;box-shadow:0 6px 20px rgba(0,0,0,0.4)}
   h1{margin:0;font-size:20px}
-  .card{
-    background:linear-gradient(180deg,var(--panel),var(--glass));border-radius:12px;padding:18px;box-shadow:0 6px 30px rgba(0,0,0,0.5);backdrop-filter: blur(6px);
-  }
-
-  /* Left big area */
-  .play-area{min-height:380px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;position:relative;overflow:hidden}
-  .cookie-btn{
-    width:min(320px,60vw);height:min(320px,60vw);max-width:420px;border-radius:999px;background:linear-gradient(180deg,#fff,#f2f7ff);box-shadow: 0 10px 30px rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;transition:transform .08s linear;
-    border:6px solid rgba(255,255,255,0.06);
-  }
+  .card{background:linear-gradient(180deg,var(--panel),var(--glass));border-radius:12px;padding:16px;box-shadow:0 8px 30px rgba(0,0,0,0.5);backdrop-filter: blur(6px)}
+  .play-area{min-height:420px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;position:relative;overflow:hidden}
+  .cookie-btn{width:min(320px,60vw);height:min(320px,60vw);max-width:420px;border-radius:999px;background:linear-gradient(180deg,#fff,#f2f7ff);box-shadow: 0 12px 40px rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;transition:transform .06s linear;border:6px solid rgba(255,255,255,0.06)}
   .cookie-btn:active{transform:scale(.985)}
-  .cookie-value{font-size:clamp(18px,3.5vw,28px);font-weight:700;color:#ffd86b}
-  .score-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:center}
-  .stat{
-    background:var(--glass);padding:10px 14px;border-radius:12px;font-weight:600;color:var(--muted);min-width:120px;text-align:center;
-  }
-
-  /* Right column */
+  .cookie-value{font-size:clamp(18px,3.5vw,28px);font-weight:800;color:#ffffff;text-shadow:0 6px 18px rgba(0,0,0,0.6)}
+  .score-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center}
+  .stat{background:var(--glass);padding:10px 12px;border-radius:12px;font-weight:700;color:var(--muted);min-width:120px;text-align:center}
   .right{display:flex;flex-direction:column;gap:12px}
-  .shop-list{display:grid;gap:10px;max-height:60vh;overflow:auto;padding-right:6px}
-  .upgrade{
-    display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03)
-  }
+  .shop-list{display:grid;gap:10px;max-height:54vh;overflow:auto;padding-right:6px}
+  .upgrade{display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03)}
   .up-left{flex:1}
-  .up-title{font-weight:700;color:white;margin-bottom:4px}
+  .up-title{font-weight:800;color:white;margin-bottom:4px}
   .up-desc{font-size:13px;color:var(--muted)}
   .up-buy{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
-  .btn{
-    padding:8px 12px;border-radius:8px;background:linear-gradient(90deg,var(--accent),var(--accent2));color:white;font-weight:700;border:none;cursor:pointer
-  }
+  .btn{padding:8px 12px;border-radius:8px;background:linear-gradient(90deg,var(--accent),var(--accent2));color:white;font-weight:800;border:none;cursor:pointer}
   .btn:disabled{opacity:.5;cursor:not-allowed}
   .small{font-size:12px;color:var(--muted)}
-
-  footer{display:flex;justify-content:space-between;align-items:center;margin-top:12px;color:#8fa2b6;font-size:13px}
-
-  /* achievements */
   .ach-grid{display:flex;gap:8px;flex-wrap:wrap}
-  .ach{
-    min-width:110px;padding:8px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.015),transparent);border:1px solid rgba(255,255,255,0.02);text-align:center
-  }
-
-  /* tiny responsive tweaks */
-  @media (max-width:420px){
-    .card{padding:12px}
-    .right{gap:10px}
-  }
-
-  /* canvas overlay */
+  .ach{min-width:110px;padding:8px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.015),transparent);border:1px solid rgba(255,255,255,0.02);text-align:center}
+  footer{display:flex;justify-content:space-between;align-items:center;margin-top:12px;color:#8fa2b6;font-size:13px}
+  .prestige-panel{display:flex;flex-direction:column;gap:8px}
+  .talent{display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:8px;background:rgba(255,255,255,0.02)}
+  .floating{position:absolute;pointer-events:none;font-weight:800}
   canvas.particles{position:absolute;inset:0;pointer-events:none;z-index:0}
   .overlay-ui{position:relative;z-index:2;width:100%}
+  .tier2{border-left:3px solid rgba(255,215,80,0.08);padding-left:10px}
+  @media (max-width:420px){ .card{padding:12px} .right{gap:10px} }
 </style>
 </head>
 <body>
@@ -84,13 +59,13 @@
     <div style="display:flex;align-items:center;gap:12px">
       <div class="logo">CC</div>
       <div>
-        <h1>Clicker — Carrd Edition</h1>
-        <div style="font-size:13px;color:var(--muted)">Prototype responsive, sauvegarde locale, évolutif</div>
+        <h1>Clicker — Édition Évolutive</h1>
+        <div style="font-size:13px;color:var(--muted)">Plus profond · Prestige utile · Tiers 2</div>
       </div>
     </div>
     <div style="display:flex;gap:8px;align-items:center">
-      <div class="small">Version prototype</div>
       <div class="small">Auto-save</div>
+      <div class="small">Responsive</div>
     </div>
   </div>
 
@@ -105,7 +80,7 @@
 
       <button id="clickBtn" class="cookie-btn" aria-label="Cliquer">
         <div style="text-align:center">
-          <div style="font-size:18px;font-weight:800;color:#272b33">Clique !</div>
+          <div style="font-size:18px;font-weight:900;color:#272b33">CLIQUE !</div>
           <div class="small" style="margin-top:6px;color:#4b5563" id="perClick">+1 / clic</div>
         </div>
       </button>
@@ -123,23 +98,30 @@
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
         <strong style="font-size:15px">Boutique</strong>
-        <small style="color:var(--muted)">Achats</small>
+        <small class="small">Achats</small>
       </div>
       <div class="shop-list" id="shopList" aria-live="polite"></div>
     </div>
 
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <strong>Prestige & Saving</strong>
+        <strong>Prestige & Talents</strong>
         <small class="small">Progression</small>
       </div>
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-        <button id="prestigeBtn" class="btn">Prestige (reset)</button>
-        <button id="exportBtn" class="btn" style="background:linear-gradient(90deg,#333,#555)">Exporter JSON</button>
-        <button id="importBtn" class="btn" style="background:linear-gradient(90deg,#334,#446)">Importer</button>
-      </div>
-      <div style="margin-top:10px;font-size:13px;color:var(--muted)">
-        Sauvegarde automatique toutes les 5s. Stocké localement (localStorage).
+      <div class="prestige-panel">
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <button id="prestigeBtn" class="btn" style="background:linear-gradient(90deg,#c256ff,#ffb86b)">Prestige (reset)</button>
+          <button id="exportBtn" class="btn" style="background:linear-gradient(90deg,#333,#555)">Exporter JSON</button>
+          <button id="importBtn" class="btn" style="background:linear-gradient(90deg,#334,#446)">Importer</button>
+        </div>
+        <div style="font-size:13px;color:var(--muted)">
+          Points de Prestige: <strong id="prestigePoints">0</strong>
+        </div>
+
+        <div style="margin-top:8px">
+          <div style="font-weight:800;margin-bottom:6px">Arbre de talents (dépense des points)</div>
+          <div id="talents"></div>
+        </div>
       </div>
     </div>
 
@@ -156,326 +138,538 @@
 </main>
 
 <script>
-/* -----------------------------
-   Clicker core
-   - optimized (no reflows in tight loops)
-   - rAF for particle updates, intervals limited
-   - autosave + import/export
-   - small upgrade system array easy to expand
-   ----------------------------- */
+/* Clicker amélioré — Tiers 2 & Prestige
+   - progression plus lente au début
+   - coût growth 1.32^n
+   - nouveaux items tiers2 (beaucoup plus chers)
+   - système de prestige: gain basé sur total, points dépensables dans talents
+   - sauvegarde locale, export/import
+*/
 
-(() => {
-  // Utilities
-  const qs = s => document.querySelector(s);
-  const qsa = s => Array.from(document.querySelectorAll(s));
-  const fmt = n => (n >= 1e9 ? (n/1e9).toFixed(2)+'G' : n >= 1e6 ? (n/1e6).toFixed(2)+'M' : n >= 1e3 ? (n/1e3).toFixed(1)+'k' : Math.floor(n));
+// Utils
+const qs = s => document.querySelector(s);
+const qsa = s => Array.from(document.querySelectorAll(s));
+const fmt = n => {
+  if (n >= 1e12) return (n/1e12).toFixed(2)+'T';
+  if (n >= 1e9) return (n/1e9).toFixed(2)+'G';
+  if (n >= 1e6) return (n/1e6).toFixed(2)+'M';
+  if (n >= 1e3) return (n/1e3).toFixed(1)+'k';
+  return Math.floor(n);
+};
 
-  // DOM
-  const totalDisplay = qs('#totalDisplay');
-  const cpsDisplay = qs('#cps');
-  const multDisplay = qs('#mult');
-  const clickBtn = qs('#clickBtn');
-  const shopList = qs('#shopList');
-  const perClickEl = qs('#perClick');
-  const prestigeBtn = qs('#prestigeBtn');
-  const exportBtn = qs('#exportBtn');
-  const importBtn = qs('#importBtn');
-  const achGrid = qs('#achGrid');
+// DOM
+const totalDisplay = qs('#totalDisplay');
+const cpsDisplay = qs('#cps');
+const multDisplay = qs('#mult');
+const clickBtn = qs('#clickBtn');
+const shopList = qs('#shopList');
+const perClickEl = qs('#perClick');
+const prestigeBtn = qs('#prestigeBtn');
+const exportBtn = qs('#exportBtn');
+const importBtn = qs('#importBtn');
+const achGrid = qs('#achGrid');
+const prestigePointsEl = qs('#prestigePoints');
+const talentsEl = qs('#talents');
 
-  // Game state
-  let state = {
-    total: 0,
-    perClick: 1,
-    cps: 0,
-    multiplier: 1,
-    prestige: 0,
-    lastTick: Date.now(),
-    bought: {}, // id -> count
-    achievements: {},
-  };
-
-  // Base upgrades (easy to expand)
-  const upgrades = [
-    { id:'cursor', title:'Curseur', desc:'+1 CPS', baseCost:15, cps:1, max:9999 },
-    { id:'farm', title:'Ferme', desc:'+8 CPS', baseCost:120, cps:8 },
-    { id:'factory', title:'Usine', desc:'+47 CPS', baseCost:1500, cps:47 },
-    { id:'clickMaster', title:'Main experte', desc:'+0.5 per click (stackable)', baseCost:80, clickBonus:0.5 },
-    { id:'multiplier', title:'Multiplicateur', desc:'+25% multiplicateur global', baseCost:1000, mult:1.25, max:10 },
-  ];
-
-  // Achievements (simple)
-  const achievements = [
-    { id:'firstClick', title:'Premier clic', condition: s => s.total >= 1 },
-    { id:'100Clicks', title:'100 cookies', condition: s => s.total >= 100 },
-    { id:'firstPrestige', title:'Prestige!', condition: s => s.prestige >= 1 },
-  ];
-
-  // Load/save
-  const LS_KEY = 'carrd_clicker_v1';
-  function save() {
-    try {
-      localStorage.setItem(LS_KEY, JSON.stringify(state));
-    } catch(e){ console.warn('save failed', e) }
+// State
+let state = {
+  total: 0,
+  perClick: 1,
+  cps: 0,
+  multiplier: 1,
+  prestige: 0,
+  prestigePoints: 0,
+  bought: {}, // id -> count
+  achievements: {},
+  lastTick: Date.now(),
+  cumulativeTotal: 0, // total cookie ever gained (useful for prestige or endgame)
+  shopDiscount: 1,
+  talents: { // prestige talents purchased
+    clickPower: 0,
+    cpsBoost: 0,
+    discount: 0
   }
-  function load() {
-    try {
-      const raw = localStorage.getItem(LS_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        Object.assign(state, parsed);
-      }
-    } catch(e){ console.warn('load failed', e) }
-  }
-  load();
+};
 
-  // Cost formula (exponential)
-  function costFor(upgrade){
-    const count = state.bought[upgrade.id] || 0;
-    return Math.ceil(upgrade.baseCost * Math.pow(1.15, count));
-  }
+// Upgrades (basic -> slower early game)
+const baseUpgrades = [
+  { id:'cursor', title:'Curseur', desc:'+0.03 CPS', baseCost:50, cps:0.03 },
+  { id:'farm', title:'Ferme', desc:'+0.2 CPS', baseCost:300, cps:0.2 },
+  { id:'factory', title:'Usine', desc:'+1.2 CPS', baseCost:5000, cps:1.2 },
+  { id:'clickMaster', title:'Main experte', desc:'+0.5 per click', baseCost:400, clickBonus:0.5 },
+  { id:'multiplier', title:'Multiplicateur (clic)', desc:'Augmente la valeur du clic (achat par niveau)', baseCost:5000, isClickMult:true }
+];
 
-  // Build shop UI
-  function buildShop(){
-    shopList.innerHTML = '';
-    upgrades.forEach(u => {
-      const wrapper = document.createElement('div');
-      wrapper.className = 'upgrade';
-      wrapper.innerHTML = `
-        <div class="up-left">
-          <div class="up-title">${u.title}</div>
-          <div class="up-desc">${u.desc}</div>
-          <div class="small">Possédés: <span data-count>${state.bought[u.id]||0}</span></div>
-        </div>
-        <div class="up-buy">
-          <div class="small">${fmt(costFor(u))}</div>
-          <button class="btn buy-btn">Acheter</button>
-        </div>
-      `;
-      const btn = wrapper.querySelector('.buy-btn');
-      btn.addEventListener('click', () => buy(u));
-      shopList.appendChild(wrapper);
-    });
-  }
+// Tier 2: late game, très chers, gros CPS
+const tier2Upgrades = [
+  { id:'mine', title:'Mine', desc:'+6 CPS', baseCost:25000, cps:6 },
+  { id:'lab', title:'Laboratoire', desc:'+60 CPS', baseCost:250000, cps:60 },
+  { id:'reactor', title:'Réacteur', desc:'+1200 CPS', baseCost:3500000, cps:1200 },
+  { id:'dimension', title:'Dimension', desc:'+25000 CPS', baseCost:50000000, cps:25000 },
+  // auto-clickers (aide pour late game)
+  { id:'autoclick1', title:'Auto-click 🟢', desc:'Auto-click 10 cps', baseCost:90000, cps:10 },
+  { id:'autoclick2', title:'Hyper-click 🔵', desc:'Auto-click 50 cps', baseCost:900000, cps:50 }
+];
 
-  // Buy logic
-  function buy(u){
-    const c = costFor(u);
-    if (state.total < c) return; // not enough
-    state.total -= c;
-    state.bought[u.id] = (state.bought[u.id]||0) + 1;
-    // apply effect
-    if (u.cps) {
-      state.cps += u.cps;
-    }
-    if (u.clickBonus) {
-      state.perClick += u.clickBonus;
-    }
-    if (u.mult) {
-      state.multiplier *= u.mult;
-    }
-    // update UI
-    buildShop();
-    render();
-    spawnParticles(12);
-  }
+// click multipliers levels (buyable via special shop entry)
+const clickMultiplierTiers = [
+  { level:1, bonus:1.015, cost:5000 },
+  { level:2, bonus:1.02,  cost:15000 },
+  { level:3, bonus:1.025, cost:50000 },
+  { level:4, bonus:1.03,  cost:200000 },
+  { level:5, bonus:1.035, cost:800000 },
+  { level:6, bonus:1.04,  cost:2500000 }
+];
 
-  // Prestige: example simple system
-  function prestige(){
-    // give prestige points based on total
-    const gain = Math.floor(Math.pow(state.total/10000, 1/3)); // soft progression
-    if (gain <= 0) { alert('Pas assez de cookies pour prestige'); return; }
-    if (!confirm(`Réinitialiser le jeu et gagner ${gain} points de prestige ?`)) return;
-    // reset but keep prestige
-    state = {
-      total: 0,
-      perClick: 1,
-      cps: 0,
-      multiplier: 1 + 0.02 * (state.prestige + gain), // bonus from prestige retained
-      prestige: state.prestige + gain,
-      lastTick: Date.now(),
-      bought: {},
-      achievements: {},
+// combine shop for rendering, keep tiers separated visually
+let upgrades = baseUpgrades.concat(tier2Upgrades);
+
+// Load/save
+const LS_KEY = 'clicker_evol_v2';
+function save(){
+  try {
+    const toSave = {
+      total: state.total,
+      perClick: state.perClick,
+      cps: state.cps,
+      multiplier: state.multiplier,
+      prestige: state.prestige,
+      prestigePoints: state.prestigePoints,
+      bought: state.bought,
+      achievements: state.achievements,
+      cumulativeTotal: state.cumulativeTotal,
+      shopDiscount: state.shopDiscount,
+      talents: state.talents
     };
-    buildShop();
-    render();
-    save();
-  }
+    localStorage.setItem(LS_KEY, JSON.stringify(toSave));
+  } catch(e){ console.warn('save failed', e) }
+}
+function load(){
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      Object.assign(state, parsed);
+    }
+  } catch(e){ console.warn('load failed', e) }
+}
+load();
 
-  prestigeBtn.addEventListener('click', prestige);
+// cost with growth curve and small inflation depending on how many owned
+function costFor(u){
+  const count = state.bought[u.id] || 0;
+  const base = u.baseCost;
+  const growth = Math.pow(1.32, count); // plus raide que 1.15
+  const inflationFactor = 1 + (count * 0.03); // petit malus additionnel
+  const discount = state.shopDiscount || 1;
+  return Math.ceil(base * growth * inflationFactor * discount);
+}
 
-  // Click handling (fast)
-  clickBtn.addEventListener('pointerdown', () => {
-    // immediate feedback
-    const add = state.perClick * state.multiplier;
-    state.total += add;
-    spawnParticles(6);
-    render();
-    checkAchievements();
+// Build shop UI
+function buildShop(){
+  shopList.innerHTML = '';
+  // section: base
+  const sectBase = document.createElement('div');
+  sectBase.innerHTML = '<div style="font-weight:800;margin-bottom:6px">Bases</div>';
+  shopList.appendChild(sectBase);
+  baseUpgrades.forEach(u => shopList.appendChild(makeUpgradeElement(u)));
+  // click multiplier special entry
+  shopList.appendChild(makeClickMultElement());
+  // section: tier2
+  const sect2 = document.createElement('div');
+  sect2.innerHTML = '<div style="font-weight:800;margin:10px 0 6px">Tiers avancés</div>';
+  shopList.appendChild(sect2);
+  tier2Upgrades.forEach(u => {
+    const el = makeUpgradeElement(u);
+    el.classList.add('tier2');
+    shopList.appendChild(el);
   });
+}
 
-  // Passive CPS tick
-  function tick(dtSec){
-    const add = state.cps * dtSec * state.multiplier;
-    state.total += add;
-    render();
-    checkAchievements();
-  }
+function makeUpgradeElement(u){
+  const wrapper = document.createElement('div');
+  wrapper.className = 'upgrade';
+  wrapper.innerHTML = `
+    <div class="up-left">
+      <div class="up-title">${u.title}</div>
+      <div class="up-desc">${u.desc}</div>
+      <div class="small">Possédés: <span data-count="${u.id}">${state.bought[u.id]||0}</span></div>
+    </div>
+    <div class="up-buy">
+      <div class="small" data-cost="${u.id}">${fmt(costFor(u))}</div>
+      <button class="btn buy-btn">Acheter</button>
+    </div>
+  `;
+  const btn = wrapper.querySelector('.buy-btn');
+  btn.addEventListener('click', () => buy(u));
+  return wrapper;
+}
 
-  // Render UI (throttled visually)
-  let lastRender = 0;
-  function render(force=false){
-    const now = performance.now();
-    if (!force && now - lastRender < 80) return; // throttle to ~12fps updates
-    lastRender = now;
-    totalDisplay.textContent = fmt(Math.floor(state.total));
-    cpsDisplay.textContent = (state.cps * state.multiplier).toFixed(1);
-    multDisplay.textContent = state.multiplier.toFixed(2) + 'x';
-    perClickEl.textContent = `+${(state.perClick*state.multiplier).toFixed(1)} / clic`;
-    // update shop counts and costs
-    qsa('[data-count]').forEach(el => {
-      const parent = el.closest('.upgrade');
-      if (!parent) return;
-      const title = parent.querySelector('.up-title').textContent;
-      const u = upgrades.find(x => x.title === title);
-      if (!u) return;
-      el.textContent = state.bought[u.id] || 0;
-      parent.querySelector('.small').textContent = fmt(costFor(u));
-    });
-  }
+function makeClickMultElement(){
+  const wrapper = document.createElement('div');
+  wrapper.className = 'upgrade';
+  wrapper.innerHTML = `
+    <div class="up-left">
+      <div class="up-title">Upgrade Clic (Multiplicateur)</div>
+      <div class="up-desc">Augmente la valeur du clic (progression par niveau)</div>
+      <div class="small">Niveaux achetés: <span id="clickMultCount">${state.bought['clickMult']||0}</span></div>
+    </div>
+    <div class="up-buy">
+      <div class="small" id="clickMultCost">${fmt(clickMultiplierTiers[Math.min((state.bought['clickMult']||0), clickMultiplierTiers.length-1)].cost)}</div>
+      <button class="btn" id="buyClickMult">Acheter</button>
+    </div>
+  `;
+  wrapper.querySelector('#buyClickMult').addEventListener('click', buyClickMult);
+  return wrapper;
+}
 
-  // Achievements check
-  function checkAchievements(){
-    achievements.forEach(a => {
-      if (!state.achievements[a.id] && a.condition(state)){
-        state.achievements[a.id] = true;
-        notify('Succès débloqué: ' + a.title);
-        renderAchievements();
-      }
-    });
-  }
-
-  function renderAchievements(){
-    achGrid.innerHTML = '';
-    achievements.forEach(a => {
-      const div = document.createElement('div');
-      div.className = 'ach';
-      div.innerHTML = `<div style="font-weight:700">${a.title}</div><div class="small">${state.achievements[a.id] ? '✓' : '—'}</div>`;
-      achGrid.appendChild(div);
-    });
-  }
-
-  function notify(msg){
-    // simple visual note
-    const t = document.createElement('div');
-    t.textContent = msg;
-    t.style = 'position:fixed;right:18px;top:18px;padding:10px 14px;background:#111;border-radius:8px;color:white;box-shadow:0 10px 30px rgba(0,0,0,0.6);z-index:9999';
-    document.body.appendChild(t);
-    setTimeout(()=>t.remove(),2500);
-  }
-
-  // Export / Import
-  exportBtn.addEventListener('click', () => {
-    const data = JSON.stringify(state, null, 2);
-    const blob = new Blob([data], {type:'application/json'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = 'clicker-save.json';
-    a.click();
-    URL.revokeObjectURL(url);
-  });
-  importBtn.addEventListener('click', () => {
-    const s = prompt('Collez le JSON de sauvegarde ici :');
-    if (!s) return;
-    try {
-      const parsed = JSON.parse(s);
-      state = Object.assign(state, parsed);
-      buildShop(); render(); save();
-      alert('Import OK');
-    } catch(e){ alert('JSON invalide') }
-  });
-
-  // Main loop
-  let last = Date.now();
-  function mainLoop(){
-    const now = Date.now();
-    const dt = (now - last) / 1000;
-    last = now;
-    tick(dt);
-    particleLoop();
-    requestAnimationFrame(mainLoop);
-  }
-  requestAnimationFrame(mainLoop);
-
-  // Autosave every 5s
-  setInterval(save, 5000);
-
-  // Build UI initial
+// buy logic
+function buy(u){
+  const c = costFor(u);
+  if (state.total < c){ notify('Pas assez de cookies'); return; }
+  state.total -= c;
+  state.bought[u.id] = (state.bought[u.id]||0) + 1;
+  // effects
+  if (u.cps) state.cps += u.cps;
+  if (u.clickBonus) state.perClick += u.clickBonus;
+  // auto-click items emulate CPS as well (already cps)
+  // update UI
   buildShop();
-  renderAchievements();
-  render();
+  render(true);
+  spawnParticles(12);
+  save();
+}
 
-  // Simple particle system (canvas) for clicks - performance minded
-  const canvas = document.getElementById('particles');
-  const ctx = canvas.getContext('2d');
-  let W = canvas.width = canvas.clientWidth;
-  let H = canvas.height = canvas.clientHeight;
-  window.addEventListener('resize', () => {
-    // adjust canvas size with devicePixelRatio
-    W = canvas.width = canvas.clientWidth * devicePixelRatio;
-    H = canvas.height = canvas.clientHeight * devicePixelRatio;
-    canvas.style.width = canvas.clientWidth + 'px';
-    canvas.style.height = canvas.clientHeight + 'px';
-    ctx.scale(devicePixelRatio, devicePixelRatio);
-  }, {passive:true});
-  // pool
-  const particles = [];
-  function spawnParticles(n){
-    for(let i=0;i<n;i++){
-      if (particles.length > 120) break; // cap
-      particles.push({
-        x: clickBtn.getBoundingClientRect().left + clickBtn.offsetWidth/2 - canvas.getBoundingClientRect().left,
-        y: clickBtn.getBoundingClientRect().top + clickBtn.offsetHeight/2 - canvas.getBoundingClientRect().top,
-        vx: (Math.random()-0.5)*6,
-        vy: -Math.random()*6-1,
-        life: Math.random()*0.9+0.5,
-        size: Math.random()*8+4,
-        hue: 200 + Math.random()*80
-      });
-    }
-  }
+function buyClickMult(){
+  const lvl = state.bought['clickMult'] || 0;
+  const tier = clickMultiplierTiers[Math.min(lvl, clickMultiplierTiers.length-1)];
+  if (!tier){ notify('Plus de niveaux disponibles'); return; }
+  if (state.total < tier.cost){ notify('Pas assez de cookies'); return; }
+  state.total -= tier.cost;
+  state.bought['clickMult'] = lvl + 1;
+  // apply multiplicative bonus to perClick (not permanent multiplier)
+  state.perClick *= tier.bonus;
+  buildShop();
+  render(true);
+  save();
+}
 
-  let lastParticleT = Date.now();
-  function particleLoop(){
-    // clear with slight fade for motion trails
-    ctx.clearRect(0,0,canvas.clientWidth,canvas.clientHeight);
-    const toRemove = [];
-    for (let i=0;i<particles.length;i++){
-      const p = particles[i];
-      p.x += p.vx;
-      p.vy += 0.18; // gravity
-      p.y += p.vy;
-      p.life -= 0.02;
-      ctx.beginPath();
-      ctx.globalAlpha = Math.max(0, p.life);
-      ctx.fillStyle = `hsl(${p.hue},70%,60%)`;
-      ctx.arc(p.x, p.y, p.size * Math.max(0,p.life), 0, Math.PI*2);
-      ctx.fill();
-      ctx.globalAlpha = 1;
-      if (p.life <= 0) toRemove.push(i);
-    }
-    // remove dead particles
-    for (let i=toRemove.length-1;i>=0;i--) particles.splice(toRemove[i],1);
-  }
+// prestige system
+function computePrestigeGain(total){
+  // gain formula: points = floor(sqrt(total / 1e6))
+  // 1 point at 1,000,000 ; 4 points at 16,000,000
+  return Math.floor(Math.sqrt(total / 1_000_000));
+}
 
-  // init canvas sizing once
-  window.dispatchEvent(new Event('resize'));
+function prestige(){
+  const gain = computePrestigeGain(state.total);
+  if (gain <= 0){ alert('Pas assez de cookies pour obtenir des points de Prestige.'); return; }
+  if (!confirm(`Réinitialiser le jeu et gagner ${gain} point(s) de Prestige ?`)) return;
+  state.prestige += gain;
+  state.prestigePoints += gain;
+  // record cumulative
+  state.cumulativeTotal += state.total;
+  // reset core progression
+  state.total = 0;
+  state.perClick = 1;
+  state.cps = 0;
+  state.multiplier = 1;
+  state.bought = {};
+  state.achievements = {};
+  state.shopDiscount = 1;
+  // talents persist (they are stored in state.talents)
+  applyTalents(); // ensure talents effects applied after prestige
+  buildShop(); render(true); save();
+}
 
-  // Initial checks
+// Talents: spend prestige points
+const talentDefs = [
+  { id:'clickPower', title:'Force du clic', desc:'+2% par point (sur perClick)', cost:1 },
+  { id:'cpsBoost', title:'Production', desc:'+1% CPS par point', cost:1 },
+  { id:'discount', title:'Réductions', desc:'-1% coût boutique par point', cost:1 }
+];
+
+function buildTalents(){
+  talentsEl.innerHTML = '';
+  talentDefs.forEach(t => {
+    const div = document.createElement('div');
+    div.className = 'talent';
+    const count = state.talents[t.id] || 0;
+    div.innerHTML = `
+      <div>
+        <div style="font-weight:800">${t.title}</div>
+        <div class="small">${t.desc}</div>
+      </div>
+      <div style="text-align:right">
+        <div class="small">Coût: ${t.cost} PT</div>
+        <div style="margin-top:6px">
+          <button class="btn buyTalent">Acheter</button>
+          <div class="small" style="margin-top:6px">Niveaux: <span data-talent-count="${t.id}">${count}</span></div>
+        </div>
+      </div>
+    `;
+    div.querySelector('.buyTalent').addEventListener('click', () => buyTalent(t.id));
+    talentsEl.appendChild(div);
+  });
+}
+
+function buyTalent(id){
+  const def = talentDefs.find(t=>t.id===id);
+  if (!def) return;
+  if (state.prestigePoints < def.cost){ notify('Pas assez de points de Prestige'); return; }
+  state.prestigePoints -= def.cost;
+  state.talents[id] = (state.talents[id]||0) + 1;
+  applyTalents();
+  buildTalents();
+  render(true);
+  save();
+}
+
+function applyTalents(){
+  // reset modifiers then apply talents
+  // discount talent
+  const discountPoints = state.talents.discount || 0;
+  state.shopDiscount = Math.max(0.7, 1 - 0.01 * discountPoints); // up to -30% cost
+  // clickPower: increase perClick multiplicatively
+  const clickPoints = state.talents.clickPower || 0;
+  // base perClick should be 1 * (1 + 0.02*clickPoints)
+  state.perClick = 1 * (1 + 0.02 * clickPoints);
+  // cpsBoost: apply as multiplier to cps (we'll track base cps via bought items sums)
+  const cpsPoints = state.talents.cpsBoost || 0;
+  // We'll re-calc cps from bought items whenever applyTalents is called by re-creating cps from bought items
+  recalcCpsFromBought();
+  state.cps *= (1 + 0.01 * cpsPoints);
+}
+
+// recalc cps by summing items (simple)
+function recalcCpsFromBought(){
+  let totalCps = 0;
+  upgrades.forEach(u => {
+    const cnt = state.bought[u.id] || 0;
+    if (u.cps) totalCps += u.cps * cnt;
+  });
+  // also auto-clickers are included if cps present
+  state.cps = totalCps;
+}
+
+// Click handling + floating text
+clickBtn.addEventListener('pointerdown', () => {
+  const gained = state.perClick * (state.multiplier || 1);
+  state.total += gained;
+  state.cumulativeTotal += gained;
+  showClickGain(gained);
+  spawnParticles(8);
+  render(true);
   checkAchievements();
+  save();
+});
 
-  // Expose for debugging (optional)
-  window.__clicker_state = state;
-})();
+// floating +X
+function showClickGain(amount){
+  const area = document.querySelector('.play-area');
+  const div = document.createElement('div');
+  div.className = 'floating';
+  div.style.left = (area.clientWidth/2) + 'px';
+  div.style.top = (area.clientHeight/2) + 'px';
+  div.style.transform = 'translate(-50%,-50%)';
+  div.style.fontSize = '20px';
+  div.style.color = '#ffd86b';
+  div.style.textShadow = '0 8px 20px rgba(0,0,0,0.6)';
+  div.style.transition = 'transform .8s ease-out, opacity .8s ease-out';
+  div.textContent = '+' + (Math.round(amount*100)/100);
+  area.appendChild(div);
+  requestAnimationFrame(()=> {
+    div.style.transform = 'translate(-50%,-160%) scale(1.05)';
+    div.style.opacity = '0';
+  });
+  setTimeout(()=>div.remove(),900);
+}
+
+// passive CPS tick
+let last = Date.now();
+function tickLoop(){
+  const now = Date.now();
+  const dt = (now - last) / 1000;
+  last = now;
+  // add cps * dt * multiplier
+  if (state.cps > 0){
+    const add = state.cps * dt * (state.multiplier || 1);
+    state.total += add;
+    state.cumulativeTotal += add;
+    render();
+    checkAchievements();
+  }
+  particleLoop();
+  requestAnimationFrame(tickLoop);
+}
+requestAnimationFrame(tickLoop);
+
+// Render UI (not too aggressive but updates promptly)
+let lastRender = 0;
+function render(force=false){
+  const now = performance.now();
+  if (!force && now - lastRender < 60) return;
+  lastRender = now;
+  totalDisplay.textContent = fmt(Math.floor(state.total));
+  cpsDisplay.textContent = (state.cps * (state.multiplier||1)).toFixed(1);
+  multDisplay.textContent = (state.multiplier||1).toFixed(2) + 'x';
+  perClickEl.textContent = `+${(state.perClick*(state.multiplier||1)).toFixed(2)} / clic`;
+  prestigePointsEl.textContent = state.prestigePoints;
+  // update shop counts/costs
+  qsa('[data-count]').forEach(el => {
+    const id = el.getAttribute('data-count');
+    el.textContent = state.bought[id] || 0;
+  });
+  qsa('[data-cost]').forEach(el => {
+    const id = el.getAttribute('data-cost');
+    const u = upgrades.find(x=>x.id===id);
+    if (u) el.textContent = fmt(costFor(u));
+  });
+  // click mult
+  const cm = qs('#clickMultCount');
+  if (cm) cm.textContent = state.bought['clickMult'] || 0;
+  const cCost = qs('#clickMultCost');
+  if (cCost) {
+    const lvl = state.bought['clickMult'] || 0;
+    const tier = clickMultiplierTiers[Math.min(lvl, clickMultiplierTiers.length-1)];
+    cCost.textContent = tier ? fmt(tier.cost) : '—';
+  }
+}
+
+// Achievements (simple)
+const achievements = [
+  { id:'firstClick', title:'Premier clic', condition: s => s.cumulativeTotal >= 1 },
+  { id:'hundred', title:'100 cookies cumulés', condition: s => s.cumulativeTotal >= 100 },
+  { id:'tenK', title:'10k cumulés', condition: s => s.cumulativeTotal >= 10000 },
+  { id:'prestigeFirst', title:'Premier prestige', condition: s => s.prestige >= 1 }
+];
+function checkAchievements(){
+  achievements.forEach(a=>{
+    if (!state.achievements[a.id] && a.condition(state)){
+      state.achievements[a.id] = true;
+      notify('Succès: ' + a.title);
+      renderAchievements();
+      save();
+    }
+  });
+}
+function renderAchievements(){
+  achGrid.innerHTML = '';
+  achievements.forEach(a=>{
+    const div = document.createElement('div');
+    div.className = 'ach';
+    div.innerHTML = `<div style="font-weight:800">${a.title}</div><div class="small">${state.achievements[a.id] ? '✓' : '—'}</div>`;
+    achGrid.appendChild(div);
+  });
+}
+
+// notify small toast
+function notify(msg){
+  const t = document.createElement('div');
+  t.textContent = msg;
+  t.style = 'position:fixed;right:18px;top:18px;padding:10px 14px;background:#111;border-radius:8px;color:white;box-shadow:0 10px 30px rgba(0,0,0,0.6);z-index:9999';
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),2500);
+}
+
+// Export/Import
+exportBtn.addEventListener('click', () => {
+  const data = JSON.stringify(state, null, 2);
+  const blob = new Blob([data], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'clicker-save.json';
+  a.click();
+  URL.revokeObjectURL(url);
+});
+importBtn.addEventListener('click', () => {
+  const s = prompt('Collez le JSON de sauvegarde ici :');
+  if (!s) return;
+  try {
+    const parsed = JSON.parse(s);
+    // merge carefully
+    Object.assign(state, parsed);
+    applyTalents();
+    recalcCpsFromBought();
+    buildShop();
+    buildTalents();
+    render(true);
+    save();
+    alert('Import OK');
+  } catch(e){ alert('JSON invalide') }
+});
+
+// particles (light)
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+let W = canvas.width = canvas.clientWidth * devicePixelRatio;
+let H = canvas.height = canvas.clientHeight * devicePixelRatio;
+canvas.style.width = canvas.clientWidth + 'px';
+canvas.style.height = canvas.clientHeight + 'px';
+ctx.scale(devicePixelRatio, devicePixelRatio);
+window.addEventListener('resize', () => {
+  W = canvas.width = canvas.clientWidth * devicePixelRatio;
+  H = canvas.height = canvas.clientHeight * devicePixelRatio;
+  canvas.style.width = canvas.clientWidth + 'px';
+  canvas.style.height = canvas.clientHeight + 'px';
+  ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+}, {passive:true});
+
+const particles = [];
+function spawnParticles(n){
+  const rect = clickBtn.getBoundingClientRect();
+  const canvasRect = canvas.getBoundingClientRect();
+  const cx = rect.left + rect.width/2 - canvasRect.left;
+  const cy = rect.top + rect.height/2 - canvasRect.top;
+  for(let i=0;i<n;i++){
+    if (particles.length > 150) break;
+    particles.push({
+      x: cx,
+      y: cy,
+      vx: (Math.random()-0.5)*6,
+      vy: -Math.random()*6-1,
+      life: Math.random()*0.9+0.5,
+      size: Math.random()*7+3,
+      hue: 200 + Math.random()*80
+    });
+  }
+}
+function particleLoop(){
+  ctx.clearRect(0,0,canvas.clientWidth,canvas.clientHeight);
+  const toRem = [];
+  for (let i=0;i<particles.length;i++){
+    const p = particles[i];
+    p.x += p.vx;
+    p.vy += 0.18;
+    p.y += p.vy;
+    p.life -= 0.02;
+    ctx.beginPath();
+    ctx.globalAlpha = Math.max(0, p.life);
+    ctx.fillStyle = `hsl(${p.hue},70%,60%)`;
+    ctx.arc(p.x, p.y, p.size * Math.max(0,p.life), 0, Math.PI*2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    if (p.life <= 0) toRem.push(i);
+  }
+  for (let i=toRem.length-1;i>=0;i--) particles.splice(toRem[i],1);
+}
+
+// achievements & UI init
+buildShop();
+buildTalents();
+render(true);
+renderAchievements();
+applyTalents();
+recalcCpsFromBought();
+
+// autosave
+setInterval(save, 5000);
+
+// prestige button
+prestigeBtn.addEventListener('click', prestige);
+
+// initial checks
+checkAchievements();
 </script>
 </body>
 </html>
