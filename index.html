@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Clicker — Prototype</title>
+<style>
+  :root{
+    --bg:#0f1720;
+    --panel:#0b1220aa;
+    --accent:#7c5cff;
+    --accent2:#3be0c6;
+    --muted:#bfcbdc;
+    --glass: rgba(255,255,255,0.04);
+    --glass-strong: rgba(255,255,255,0.06);
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#06101a);color:var(--muted);-webkit-font-smoothing:antialiased}
+  .wrap{
+    max-width:1100px;margin:28px auto;padding:20px;display:grid;grid-template-columns:1fr 360px;gap:18px;
+  }
+  @media (max-width:880px){ .wrap{grid-template-columns:1fr; padding:12px} .right{order:2} }
+  header{display:flex;align-items:center;gap:14px;margin-bottom:8px}
+  .logo{
+    width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:700;color:white;box-shadow:0 6px 20px rgba(0,0,0,0.4);
+  }
+  h1{margin:0;font-size:20px}
+  .card{
+    background:linear-gradient(180deg,var(--panel),var(--glass));border-radius:12px;padding:18px;box-shadow:0 6px 30px rgba(0,0,0,0.5);backdrop-filter: blur(6px);
+  }
+
+  /* Left big area */
+  .play-area{min-height:380px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;position:relative;overflow:hidden}
+  .cookie-btn{
+    width:min(320px,60vw);height:min(320px,60vw);max-width:420px;border-radius:999px;background:linear-gradient(180deg,#fff,#f2f7ff);box-shadow: 0 10px 30px rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;transition:transform .08s linear;
+    border:6px solid rgba(255,255,255,0.06);
+  }
+  .cookie-btn:active{transform:scale(.985)}
+  .cookie-value{font-size:clamp(18px,3.5vw,28px);font-weight:700;color:#ffd86b}
+  .score-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:center}
+  .stat{
+    background:var(--glass);padding:10px 14px;border-radius:12px;font-weight:600;color:var(--muted);min-width:120px;text-align:center;
+  }
+
+  /* Right column */
+  .right{display:flex;flex-direction:column;gap:12px}
+  .shop-list{display:grid;gap:10px;max-height:60vh;overflow:auto;padding-right:6px}
+  .upgrade{
+    display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03)
+  }
+  .up-left{flex:1}
+  .up-title{font-weight:700;color:white;margin-bottom:4px}
+  .up-desc{font-size:13px;color:var(--muted)}
+  .up-buy{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+  .btn{
+    padding:8px 12px;border-radius:8px;background:linear-gradient(90deg,var(--accent),var(--accent2));color:white;font-weight:700;border:none;cursor:pointer
+  }
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .small{font-size:12px;color:var(--muted)}
+
+  footer{display:flex;justify-content:space-between;align-items:center;margin-top:12px;color:#8fa2b6;font-size:13px}
+
+  /* achievements */
+  .ach-grid{display:flex;gap:8px;flex-wrap:wrap}
+  .ach{
+    min-width:110px;padding:8px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.015),transparent);border:1px solid rgba(255,255,255,0.02);text-align:center
+  }
+
+  /* tiny responsive tweaks */
+  @media (max-width:420px){
+    .card{padding:12px}
+    .right{gap:10px}
+  }
+
+  /* canvas overlay */
+  canvas.particles{position:absolute;inset:0;pointer-events:none;z-index:0}
+  .overlay-ui{position:relative;z-index:2;width:100%}
+</style>
+</head>
+<body>
+<main class="wrap" id="app">
+  <div style="grid-column:1/-1;display:flex;justify-content:space-between;align-items:center">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="logo">CC</div>
+      <div>
+        <h1>Clicker — Carrd Edition</h1>
+        <div style="font-size:13px;color:var(--muted)">Prototype responsive, sauvegarde locale, évolutif</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <div class="small">Version prototype</div>
+      <div class="small">Auto-save</div>
+    </div>
+  </div>
+
+  <!-- Left / gameplay -->
+  <section class="card play-area">
+    <canvas class="particles" id="particles"></canvas>
+    <div class="overlay-ui" style="width:100%;display:flex;flex-direction:column;align-items:center;gap:12px">
+      <div style="text-align:center">
+        <div class="small">Cookies</div>
+        <div id="totalDisplay" class="cookie-value">0</div>
+      </div>
+
+      <button id="clickBtn" class="cookie-btn" aria-label="Cliquer">
+        <div style="text-align:center">
+          <div style="font-size:18px;font-weight:800;color:#272b33">Clique !</div>
+          <div class="small" style="margin-top:6px;color:#4b5563" id="perClick">+1 / clic</div>
+        </div>
+      </button>
+
+      <div class="score-row">
+        <div class="stat">CPS: <span id="cps">0</span></div>
+        <div class="stat">Multip : <span id="mult">1x</span></div>
+        <div class="stat">Prestige: <span id="prestige">0</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Right / shop -->
+  <aside class="right">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <strong style="font-size:15px">Boutique</strong>
+        <small style="color:var(--muted)">Achats</small>
+      </div>
+      <div class="shop-list" id="shopList" aria-live="polite"></div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <strong>Prestige & Saving</strong>
+        <small class="small">Progression</small>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <button id="prestigeBtn" class="btn">Prestige (reset)</button>
+        <button id="exportBtn" class="btn" style="background:linear-gradient(90deg,#333,#555)">Exporter JSON</button>
+        <button id="importBtn" class="btn" style="background:linear-gradient(90deg,#334,#446)">Importer</button>
+      </div>
+      <div style="margin-top:10px;font-size:13px;color:var(--muted)">
+        Sauvegarde automatique toutes les 5s. Stocké localement (localStorage).
+      </div>
+    </div>
+
+    <div class="card">
+      <strong style="display:block;margin-bottom:8px">Succès</strong>
+      <div class="ach-grid" id="achGrid"></div>
+    </div>
+
+    <footer style="grid-column:1/-1">
+      <div>Fait avec ❤️ — Prototype</div>
+      <div style="color:var(--muted)">Astuce: héberge sur GitHub Pages et intègre en iframe dans Carrd</div>
+    </footer>
+  </aside>
+</main>
+
+<script>
+/* -----------------------------
+   Clicker core
+   - optimized (no reflows in tight loops)
+   - rAF for particle updates, intervals limited
+   - autosave + import/export
+   - small upgrade system array easy to expand
+   ----------------------------- */
+
+(() => {
+  // Utilities
+  const qs = s => document.querySelector(s);
+  const qsa = s => Array.from(document.querySelectorAll(s));
+  const fmt = n => (n >= 1e9 ? (n/1e9).toFixed(2)+'G' : n >= 1e6 ? (n/1e6).toFixed(2)+'M' : n >= 1e3 ? (n/1e3).toFixed(1)+'k' : Math.floor(n));
+
+  // DOM
+  const totalDisplay = qs('#totalDisplay');
+  const cpsDisplay = qs('#cps');
+  const multDisplay = qs('#mult');
+  const clickBtn = qs('#clickBtn');
+  const shopList = qs('#shopList');
+  const perClickEl = qs('#perClick');
+  const prestigeBtn = qs('#prestigeBtn');
+  const exportBtn = qs('#exportBtn');
+  const importBtn = qs('#importBtn');
+  const achGrid = qs('#achGrid');
+
+  // Game state
+  let state = {
+    total: 0,
+    perClick: 1,
+    cps: 0,
+    multiplier: 1,
+    prestige: 0,
+    lastTick: Date.now(),
+    bought: {}, // id -> count
+    achievements: {},
+  };
+
+  // Base upgrades (easy to expand)
+  const upgrades = [
+    { id:'cursor', title:'Curseur', desc:'+1 CPS', baseCost:15, cps:1, max:9999 },
+    { id:'farm', title:'Ferme', desc:'+8 CPS', baseCost:120, cps:8 },
+    { id:'factory', title:'Usine', desc:'+47 CPS', baseCost:1500, cps:47 },
+    { id:'clickMaster', title:'Main experte', desc:'+0.5 per click (stackable)', baseCost:80, clickBonus:0.5 },
+    { id:'multiplier', title:'Multiplicateur', desc:'+25% multiplicateur global', baseCost:1000, mult:1.25, max:10 },
+  ];
+
+  // Achievements (simple)
+  const achievements = [
+    { id:'firstClick', title:'Premier clic', condition: s => s.total >= 1 },
+    { id:'100Clicks', title:'100 cookies', condition: s => s.total >= 100 },
+    { id:'firstPrestige', title:'Prestige!', condition: s => s.prestige >= 1 },
+  ];
+
+  // Load/save
+  const LS_KEY = 'carrd_clicker_v1';
+  function save() {
+    try {
+      localStorage.setItem(LS_KEY, JSON.stringify(state));
+    } catch(e){ console.warn('save failed', e) }
+  }
+  function load() {
+    try {
+      const raw = localStorage.getItem(LS_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        Object.assign(state, parsed);
+      }
+    } catch(e){ console.warn('load failed', e) }
+  }
+  load();
+
+  // Cost formula (exponential)
+  function costFor(upgrade){
+    const count = state.bought[upgrade.id] || 0;
+    return Math.ceil(upgrade.baseCost * Math.pow(1.15, count));
+  }
+
+  // Build shop UI
+  function buildShop(){
+    shopList.innerHTML = '';
+    upgrades.forEach(u => {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'upgrade';
+      wrapper.innerHTML = `
+        <div class="up-left">
+          <div class="up-title">${u.title}</div>
+          <div class="up-desc">${u.desc}</div>
+          <div class="small">Possédés: <span data-count>${state.bought[u.id]||0}</span></div>
+        </div>
+        <div class="up-buy">
+          <div class="small">${fmt(costFor(u))}</div>
+          <button class="btn buy-btn">Acheter</button>
+        </div>
+      `;
+      const btn = wrapper.querySelector('.buy-btn');
+      btn.addEventListener('click', () => buy(u));
+      shopList.appendChild(wrapper);
+    });
+  }
+
+  // Buy logic
+  function buy(u){
+    const c = costFor(u);
+    if (state.total < c) return; // not enough
+    state.total -= c;
+    state.bought[u.id] = (state.bought[u.id]||0) + 1;
+    // apply effect
+    if (u.cps) {
+      state.cps += u.cps;
+    }
+    if (u.clickBonus) {
+      state.perClick += u.clickBonus;
+    }
+    if (u.mult) {
+      state.multiplier *= u.mult;
+    }
+    // update UI
+    buildShop();
+    render();
+    spawnParticles(12);
+  }
+
+  // Prestige: example simple system
+  function prestige(){
+    // give prestige points based on total
+    const gain = Math.floor(Math.pow(state.total/10000, 1/3)); // soft progression
+    if (gain <= 0) { alert('Pas assez de cookies pour prestige'); return; }
+    if (!confirm(`Réinitialiser le jeu et gagner ${gain} points de prestige ?`)) return;
+    // reset but keep prestige
+    state = {
+      total: 0,
+      perClick: 1,
+      cps: 0,
+      multiplier: 1 + 0.02 * (state.prestige + gain), // bonus from prestige retained
+      prestige: state.prestige + gain,
+      lastTick: Date.now(),
+      bought: {},
+      achievements: {},
+    };
+    buildShop();
+    render();
+    save();
+  }
+
+  prestigeBtn.addEventListener('click', prestige);
+
+  // Click handling (fast)
+  clickBtn.addEventListener('pointerdown', () => {
+    // immediate feedback
+    const add = state.perClick * state.multiplier;
+    state.total += add;
+    spawnParticles(6);
+    render();
+    checkAchievements();
+  });
+
+  // Passive CPS tick
+  function tick(dtSec){
+    const add = state.cps * dtSec * state.multiplier;
+    state.total += add;
+    render();
+    checkAchievements();
+  }
+
+  // Render UI (throttled visually)
+  let lastRender = 0;
+  function render(force=false){
+    const now = performance.now();
+    if (!force && now - lastRender < 80) return; // throttle to ~12fps updates
+    lastRender = now;
+    totalDisplay.textContent = fmt(Math.floor(state.total));
+    cpsDisplay.textContent = (state.cps * state.multiplier).toFixed(1);
+    multDisplay.textContent = state.multiplier.toFixed(2) + 'x';
+    perClickEl.textContent = `+${(state.perClick*state.multiplier).toFixed(1)} / clic`;
+    // update shop counts and costs
+    qsa('[data-count]').forEach(el => {
+      const parent = el.closest('.upgrade');
+      if (!parent) return;
+      const title = parent.querySelector('.up-title').textContent;
+      const u = upgrades.find(x => x.title === title);
+      if (!u) return;
+      el.textContent = state.bought[u.id] || 0;
+      parent.querySelector('.small').textContent = fmt(costFor(u));
+    });
+  }
+
+  // Achievements check
+  function checkAchievements(){
+    achievements.forEach(a => {
+      if (!state.achievements[a.id] && a.condition(state)){
+        state.achievements[a.id] = true;
+        notify('Succès débloqué: ' + a.title);
+        renderAchievements();
+      }
+    });
+  }
+
+  function renderAchievements(){
+    achGrid.innerHTML = '';
+    achievements.forEach(a => {
+      const div = document.createElement('div');
+      div.className = 'ach';
+      div.innerHTML = `<div style="font-weight:700">${a.title}</div><div class="small">${state.achievements[a.id] ? '✓' : '—'}</div>`;
+      achGrid.appendChild(div);
+    });
+  }
+
+  function notify(msg){
+    // simple visual note
+    const t = document.createElement('div');
+    t.textContent = msg;
+    t.style = 'position:fixed;right:18px;top:18px;padding:10px 14px;background:#111;border-radius:8px;color:white;box-shadow:0 10px 30px rgba(0,0,0,0.6);z-index:9999';
+    document.body.appendChild(t);
+    setTimeout(()=>t.remove(),2500);
+  }
+
+  // Export / Import
+  exportBtn.addEventListener('click', () => {
+    const data = JSON.stringify(state, null, 2);
+    const blob = new Blob([data], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'clicker-save.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+  importBtn.addEventListener('click', () => {
+    const s = prompt('Collez le JSON de sauvegarde ici :');
+    if (!s) return;
+    try {
+      const parsed = JSON.parse(s);
+      state = Object.assign(state, parsed);
+      buildShop(); render(); save();
+      alert('Import OK');
+    } catch(e){ alert('JSON invalide') }
+  });
+
+  // Main loop
+  let last = Date.now();
+  function mainLoop(){
+    const now = Date.now();
+    const dt = (now - last) / 1000;
+    last = now;
+    tick(dt);
+    particleLoop();
+    requestAnimationFrame(mainLoop);
+  }
+  requestAnimationFrame(mainLoop);
+
+  // Autosave every 5s
+  setInterval(save, 5000);
+
+  // Build UI initial
+  buildShop();
+  renderAchievements();
+  render();
+
+  // Simple particle system (canvas) for clicks - performance minded
+  const canvas = document.getElementById('particles');
+  const ctx = canvas.getContext('2d');
+  let W = canvas.width = canvas.clientWidth;
+  let H = canvas.height = canvas.clientHeight;
+  window.addEventListener('resize', () => {
+    // adjust canvas size with devicePixelRatio
+    W = canvas.width = canvas.clientWidth * devicePixelRatio;
+    H = canvas.height = canvas.clientHeight * devicePixelRatio;
+    canvas.style.width = canvas.clientWidth + 'px';
+    canvas.style.height = canvas.clientHeight + 'px';
+    ctx.scale(devicePixelRatio, devicePixelRatio);
+  }, {passive:true});
+  // pool
+  const particles = [];
+  function spawnParticles(n){
+    for(let i=0;i<n;i++){
+      if (particles.length > 120) break; // cap
+      particles.push({
+        x: clickBtn.getBoundingClientRect().left + clickBtn.offsetWidth/2 - canvas.getBoundingClientRect().left,
+        y: clickBtn.getBoundingClientRect().top + clickBtn.offsetHeight/2 - canvas.getBoundingClientRect().top,
+        vx: (Math.random()-0.5)*6,
+        vy: -Math.random()*6-1,
+        life: Math.random()*0.9+0.5,
+        size: Math.random()*8+4,
+        hue: 200 + Math.random()*80
+      });
+    }
+  }
+
+  let lastParticleT = Date.now();
+  function particleLoop(){
+    // clear with slight fade for motion trails
+    ctx.clearRect(0,0,canvas.clientWidth,canvas.clientHeight);
+    const toRemove = [];
+    for (let i=0;i<particles.length;i++){
+      const p = particles[i];
+      p.x += p.vx;
+      p.vy += 0.18; // gravity
+      p.y += p.vy;
+      p.life -= 0.02;
+      ctx.beginPath();
+      ctx.globalAlpha = Math.max(0, p.life);
+      ctx.fillStyle = `hsl(${p.hue},70%,60%)`;
+      ctx.arc(p.x, p.y, p.size * Math.max(0,p.life), 0, Math.PI*2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      if (p.life <= 0) toRemove.push(i);
+    }
+    // remove dead particles
+    for (let i=toRemove.length-1;i>=0;i--) particles.splice(toRemove[i],1);
+  }
+
+  // init canvas sizing once
+  window.dispatchEvent(new Event('resize'));
+
+  // Initial checks
+  checkAchievements();
+
+  // Expose for debugging (optional)
+  window.__clicker_state = state;
+})();
+</script>
+</body>
+</html>
