@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Clicker — Édition Évolutive</title>
+<title>Tiramisù Clicker — Bourse & Prestige</title>
 <style>
   :root{
     --bg:#071021;
@@ -18,7 +18,7 @@
   *{box-sizing:border-box}
   html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#03101a);color:var(--muted);-webkit-font-smoothing:antialiased}
   .wrap{
-    max-width:1100px;margin:24px auto;padding:18px;display:grid;grid-template-columns:1fr 380px;gap:16px;
+    max-width:1100px;margin:24px auto;padding:18px;display:grid;grid-template-columns:1fr 420px;gap:16px;
   }
   @media (max-width:900px){ .wrap{grid-template-columns:1fr; padding:12px} .right{order:2} }
   header{display:flex;align-items:center;gap:12px;margin-bottom:6px}
@@ -32,7 +32,7 @@
   .score-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center}
   .stat{background:var(--glass);padding:10px 12px;border-radius:12px;font-weight:700;color:var(--muted);min-width:120px;text-align:center}
   .right{display:flex;flex-direction:column;gap:12px}
-  .shop-list{display:grid;gap:10px;max-height:54vh;overflow:auto;padding-right:6px}
+  .shop-list{display:grid;gap:10px;max-height:42vh;overflow:auto;padding-right:6px}
   .upgrade{display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03)}
   .up-left{flex:1}
   .up-title{font-weight:800;color:white;margin-bottom:4px}
@@ -50,6 +50,8 @@
   canvas.particles{position:absolute;inset:0;pointer-events:none;z-index:0}
   .overlay-ui{position:relative;z-index:2;width:100%}
   .tier2{border-left:3px solid rgba(255,215,80,0.08);padding-left:10px}
+  .market-canvas{width:100%;height:120px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent); border-radius:8px}
+  .market-row{display:flex;gap:8px;align-items:center;justify-content:space-between}
   @media (max-width:420px){ .card{padding:12px} .right{gap:10px} }
 </style>
 </head>
@@ -57,10 +59,10 @@
 <main class="wrap" id="app">
   <div style="grid-column:1/-1;display:flex;justify-content:space-between;align-items:center">
     <div style="display:flex;align-items:center;gap:12px">
-      <div class="logo">CC</div>
+      <div class="logo">TT</div>
       <div>
-        <h1>Clicker — Par JeanJean</h1>
-        <div style="font-size:13px;color:var(--muted)">Plus profond · Prestige utile · Tiers 2</div>
+        <h1>Tiramisù Clicker — Par JeanJean</h1>
+        <div style="font-size:13px;color:var(--muted)">Plus profond · Prestige utile · Bourse intégrée</div>
       </div>
     </div>
     <div style="display:flex;gap:8px;align-items:center">
@@ -74,7 +76,7 @@
     <canvas class="particles" id="particles"></canvas>
     <div class="overlay-ui" style="width:100%;display:flex;flex-direction:column;align-items:center;gap:12px">
       <div style="text-align:center">
-        <div class="small">Cookies</div>
+        <div class="small">Tiramisù</div>
         <div id="totalDisplay" class="cookie-value">0</div>
       </div>
 
@@ -86,14 +88,14 @@
       </button>
 
       <div class="score-row">
-        <div class="stat">CPS: <span id="cps">0</span></div>
+        <div class="stat">TPS: <span id="cps">0</span></div>
         <div class="stat">Multip : <span id="mult">1x</span></div>
         <div class="stat">Prestige: <span id="prestige">0</span></div>
       </div>
     </div>
   </section>
 
-  <!-- Right / shop -->
+  <!-- Right / shop + market -->
   <aside class="right">
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
@@ -101,6 +103,39 @@
         <small class="small">Achats</small>
       </div>
       <div class="shop-list" id="shopList" aria-live="polite"></div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <strong>Marché des Tiramisù (Bourse)</strong>
+        <small class="small">Investir</small>
+      </div>
+
+      <div id="marketPanel">
+        <canvas id="marketChart" class="market-canvas"></canvas>
+        <div style="margin-top:8px" class="market-row">
+          <div>
+            <div class="small">Prix actuel:</div>
+            <div style="font-weight:800" id="marketPrice">—</div>
+          </div>
+          <div style="text-align:right">
+            <div class="small">Tes parts:</div>
+            <div style="font-weight:800" id="portfolioShares">0</div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
+          <input id="tradeAmount" type="number" min="1" value="10" style="flex:1;padding:8px;border-radius:8px;border:none;background:rgba(255,255,255,0.02);color:var(--muted)">
+          <button id="buyShareBtn" class="btn">Acheter</button>
+          <button id="sellShareBtn" class="btn">Vendre</button>
+        </div>
+
+        <div style="margin-top:8px;color:var(--muted);font-size:13px">
+          <div>Portefeuille: <span id="portfolioValue">0</span> TT (valeur actuelle)</div>
+          <div>Coût moyen: <span id="avgCost">—</span></div>
+          <div style="margin-top:6px" id="marketLockedMsg" class="small"></div>
+        </div>
+      </div>
     </div>
 
     <div class="card">
@@ -138,12 +173,11 @@
 </main>
 
 <script>
-/* Clicker amélioré — Tiers 2 & Prestige
-   - progression plus lente au début
-   - coût growth 1.32^n
-   - nouveaux items tiers2 (beaucoup plus chers)
-   - système de prestige: gain basé sur total, points dépensables dans talents
-   - sauvegarde locale, export/import
+/* Tiramisù Clicker — Bourse ajoutée
+   - remplace cookies par tiramisù
+   - nouveaux prix, growth 1.28^n
+   - marché simulé : random walk, graphique, achat/vente de parts
+   - trading unlock à cumulativeTiramisu >= MARKET_UNLOCK_THRESHOLD
 */
 
 // Utils
@@ -171,75 +205,99 @@ const achGrid = qs('#achGrid');
 const prestigePointsEl = qs('#prestigePoints');
 const talentsEl = qs('#talents');
 
+// Market DOM
+const marketPriceEl = qs('#marketPrice');
+const portfolioSharesEl = qs('#portfolioShares');
+const portfolioValueEl = qs('#portfolioValue');
+const avgCostEl = qs('#avgCost');
+const buyShareBtn = qs('#buyShareBtn');
+const sellShareBtn = qs('#sellShareBtn');
+const tradeAmountInput = qs('#tradeAmount');
+const marketChartCanvas = qs('#marketChart');
+const marketLockedMsg = qs('#marketLockedMsg');
+
 // State
 let state = {
-  total: 0,
-  perClick: 1,
-  cps: 0,
+  tiramisu: 0,            // current tiramisù
+  perClick: 1,            // tiramisù per click
+  tps: 0,                 // tiramisù per second (CPS renamed)
   multiplier: 1,
   prestige: 0,
   prestigePoints: 0,
-  bought: {}, // id -> count
+  bought: {},            // id -> count
   achievements: {},
   lastTick: Date.now(),
-  cumulativeTotal: 0, // total cookie ever gained (useful for prestige or endgame)
+  cumulativeTiramisu: 0,  // total tiramisù ever gained
   shopDiscount: 1,
   talents: { // prestige talents purchased
     clickPower: 0,
     cpsBoost: 0,
     discount: 0
+  },
+  // portfolio & market
+  market: {
+    unlocked: false,
+    price: 100,           // price per share in TT (tiramisù)
+    history: [],          // price history for chart
+    volatility: 0.02,     // base volatility (2%)
+    ticksSinceEvent: 0
+  },
+  portfolio: {
+    shares: 0,
+    costBasis: 0          // total tiramisù spent acquiring shares (for avg calc)
   }
 };
 
-// Upgrades (basic -> slower early game)
+// Config
+const LS_KEY = 'tiramisu_clicker_v3';
+const MARKET_UNLOCK_THRESHOLD = 10000; // cumulative tiramisus needed to unlock market (modifiable)
+const PRICE_GROWTH = 1.28; // coût growth exponent
+const INFLATION_PER_OWNED = 0.025; // légère inflation additionnelle
+
+// Upgrades (revisés — nouveaux coûts & descriptions)
 const baseUpgrades = [
-  { id:'cursor', title:'Curseur', desc:'+0.1 CPS', baseCost:50, cps:0.1 },
-  { id:'farm', title:'Ferme', desc:'+0.5 CPS', baseCost:300, cps:0.5 },
-  { id:'factory', title:'Usine', desc:'+5 CPS', baseCost:5000, cps:5.0 },
-  { id:'clickMaster', title:'Main experte', desc:'+1 per click', baseCost:400, clickBonus:0.5 },
-  { id:'multiplier', title:'Multiplicateur (clic)', desc:'Augmente la valeur du clic (achat par niveau)', baseCost:5000, isClickMult:true }
+  { id:'cursor', title:'Petit cuiller', desc:'+0.2 TPS', baseCost:25, tps:0.2 },
+  { id:'oven', title:'Four', desc:'+1 TPS', baseCost:200, tps:1 },
+  { id:'bakery', title:'Boulangerie', desc:'+8 TPS', baseCost:2200, tps:8 },
+  { id:'chef', title:'Chef expert', desc:'+1.5 par clic', baseCost:900, clickBonus:1.5 },
+  { id:'multiplier', title:'Multiplicateur (clic)', desc:'Augmente la valeur du clic', baseCost:3000, isClickMult:true }
 ];
 
-// Tier 2: late game, très chers, gros CPS
 const tier2Upgrades = [
-  { id:'mine', title:'Mine', desc:'+10 CPS', baseCost:25000, cps:10 },
-  { id:'lab', title:'Laboratoire', desc:'+100 CPS', baseCost:250000, cps:100 },
-  { id:'reactor', title:'Réacteur', desc:'+1200 CPS', baseCost:3500000, cps:1200 },
-  { id:'dimension', title:'Dimension', desc:'+25000 CPS', baseCost:50000000, cps:25000 },
-  // auto-clickers (aide pour late game)
-  { id:'autoclick1', title:'Auto-click', desc:'Auto-click 20 cps', baseCost:90000, cps:20 },
-  { id:'autoclick2', title:'Hyper-click', desc:'Auto-click 100 cps', baseCost:900000, cps:100 }
+  { id:'creamFactory', title:'Crème usine', desc:'+40 TPS', baseCost:45000, tps:40 },
+  { id:'espressoPlant', title:'Cafetière industrielle', desc:'+400 TPS', baseCost:420000, tps:400 },
+  { id:'fusionOven', title:'Four nucléaire', desc:'+7000 TPS', baseCost:6000000, tps:7000 },
+  { id:'dimension', title:'Dimension gourmande', desc:'+180000 TPS', baseCost:120000000, tps:180000 },
+  { id:'autoclick1', title:'Auto-click', desc:'Auto-click 25 TPS', baseCost:100000, tps:25 },
+  { id:'autoclick2', title:'Hyper-click', desc:'Auto-click 120 TPS', baseCost:950000, tps:120 }
 ];
 
-// click multipliers levels (buyable via special shop entry)
 const clickMultiplierTiers = [
-  { level:1, bonus:1.015, cost:5000 },
-  { level:2, bonus:1.02,  cost:15000 },
-  { level:3, bonus:1.025, cost:50000 },
-  { level:4, bonus:1.03,  cost:200000 },
-  { level:5, bonus:1.035, cost:800000 },
-  { level:6, bonus:1.04,  cost:2500000 }
+  { level:1, bonus:1.02, cost:2000 },
+  { level:2, bonus:1.03, cost:8000 },
+  { level:3, bonus:1.04, cost:30000 },
+  { level:4, bonus:1.06, cost:120000 }
 ];
 
-// combine shop for rendering, keep tiers separated visually
 let upgrades = baseUpgrades.concat(tier2Upgrades);
 
-// Load/save
-const LS_KEY = 'clicker_evol_v2';
+// Load / Save
 function save(){
   try {
     const toSave = {
-      total: state.total,
+      tiramisu: state.tiramisu,
       perClick: state.perClick,
-      cps: state.cps,
+      tps: state.tps,
       multiplier: state.multiplier,
       prestige: state.prestige,
       prestigePoints: state.prestigePoints,
       bought: state.bought,
       achievements: state.achievements,
-      cumulativeTotal: state.cumulativeTotal,
+      cumulativeTiramisu: state.cumulativeTiramisu,
       shopDiscount: state.shopDiscount,
-      talents: state.talents
+      talents: state.talents,
+      market: state.market,
+      portfolio: state.portfolio
     };
     localStorage.setItem(LS_KEY, JSON.stringify(toSave));
   } catch(e){ console.warn('save failed', e) }
@@ -250,6 +308,15 @@ function load(){
     if (raw) {
       const parsed = JSON.parse(raw);
       Object.assign(state, parsed);
+      // if market.history missing or short, ensure minimal history
+      if (!state.market || !state.market.history || state.market.history.length < 10) {
+        state.market = state.market || {};
+        state.market.price = state.market.price || 100;
+        state.market.history = state.market.history || Array.from({length:40}, (_,i)=>state.market.price);
+      }
+    } else {
+      // initialize market history
+      state.market.history = Array.from({length:40}, (_,i)=>state.market.price);
     }
   } catch(e){ console.warn('load failed', e) }
 }
@@ -259,8 +326,8 @@ load();
 function costFor(u){
   const count = state.bought[u.id] || 0;
   const base = u.baseCost;
-  const growth = Math.pow(1.32, count); // plus raide que 1.15
-  const inflationFactor = 1 + (count * 0.03); // petit malus additionnel
+  const growth = Math.pow(PRICE_GROWTH, count);
+  const inflationFactor = 1 + (count * INFLATION_PER_OWNED);
   const discount = state.shopDiscount || 1;
   return Math.ceil(base * growth * inflationFactor * discount);
 }
@@ -323,16 +390,15 @@ function makeClickMultElement(){
   return wrapper;
 }
 
-// buy logic
+// Purchase logic
 function buy(u){
   const c = costFor(u);
-  if (state.total < c){ notify('Pas assez de cookies'); return; }
-  state.total -= c;
+  if (state.tiramisu < c){ notify('Pas assez de tiramisù'); return; }
+  state.tiramisu -= c;
   state.bought[u.id] = (state.bought[u.id]||0) + 1;
   // effects
-  if (u.cps) state.cps += u.cps;
+  if (u.tps) state.tps += u.tps;
   if (u.clickBonus) state.perClick += u.clickBonus;
-  // auto-click items emulate CPS as well (already cps)
   // update UI
   buildShop();
   render(true);
@@ -344,8 +410,8 @@ function buyClickMult(){
   const lvl = state.bought['clickMult'] || 0;
   const tier = clickMultiplierTiers[Math.min(lvl, clickMultiplierTiers.length-1)];
   if (!tier){ notify('Plus de niveaux disponibles'); return; }
-  if (state.total < tier.cost){ notify('Pas assez de cookies'); return; }
-  state.total -= tier.cost;
+  if (state.tiramisu < tier.cost){ notify('Pas assez de tiramisù'); return; }
+  state.tiramisu -= tier.cost;
   state.bought['clickMult'] = lvl + 1;
   // apply multiplicative bonus to perClick (not permanent multiplier)
   state.perClick *= tier.bonus;
@@ -354,38 +420,37 @@ function buyClickMult(){
   save();
 }
 
-// prestige system
+// Prestige system
 function computePrestigeGain(total){
   // gain formula: points = floor(sqrt(total / 1e6))
-  // 1 point at 1,000,000 ; 4 points at 16,000,000
   return Math.floor(Math.sqrt(total / 1_000_000));
 }
 
 function prestige(){
-  const gain = computePrestigeGain(state.total);
-  if (gain <= 0){ alert('Pas assez de cookies pour obtenir des points de Prestige.'); return; }
+  const gain = computePrestigeGain(state.tiramisu);
+  if (gain <= 0){ alert('Pas assez de tiramisù pour obtenir des points de Prestige.'); return; }
   if (!confirm(`Réinitialiser le jeu et gagner ${gain} point(s) de Prestige ?`)) return;
   state.prestige += gain;
   state.prestigePoints += gain;
   // record cumulative
-  state.cumulativeTotal += state.total;
+  state.cumulativeTiramisu += state.tiramisu;
   // reset core progression
-  state.total = 0;
+  state.tiramisu = 0;
   state.perClick = 1;
-  state.cps = 0;
+  state.tps = 0;
   state.multiplier = 1;
   state.bought = {};
   state.achievements = {};
   state.shopDiscount = 1;
-  // talents persist (they are stored in state.talents)
-  applyTalents(); // ensure talents effects applied after prestige
+  // talents persist (stored in state.talents)
+  applyTalents();
   buildShop(); render(true); save();
 }
 
-// Talents: spend prestige points
+// Talents
 const talentDefs = [
   { id:'clickPower', title:'Force du clic', desc:'+2% par point (sur perClick)', cost:1 },
-  { id:'cpsBoost', title:'Production', desc:'+1% CPS par point', cost:1 },
+  { id:'cpsBoost', title:'Production', desc:'+1% TPS par point', cost:1 },
   { id:'discount', title:'Réductions', desc:'-1% coût boutique par point', cost:1 }
 ];
 
@@ -426,41 +491,38 @@ function buyTalent(id){
 }
 
 function applyTalents(){
-  // reset modifiers then apply talents
   // discount talent
   const discountPoints = state.talents.discount || 0;
   state.shopDiscount = Math.max(0.7, 1 - 0.01 * discountPoints); // up to -30% cost
-  // clickPower: increase perClick multiplicatively
+  // clickPower: increase perClick multiplicatively relative to base 1
   const clickPoints = state.talents.clickPower || 0;
-  // base perClick should be 1 * (1 + 0.02*clickPoints)
   state.perClick = 1 * (1 + 0.02 * clickPoints);
-  // cpsBoost: apply as multiplier to cps (we'll track base cps via bought items sums)
+  // recalc tps from bought items then apply cps boost
+  recalcTpsFromBought();
   const cpsPoints = state.talents.cpsBoost || 0;
-  // We'll re-calc cps from bought items whenever applyTalents is called by re-creating cps from bought items
-  recalcCpsFromBought();
-  state.cps *= (1 + 0.01 * cpsPoints);
+  state.tps *= (1 + 0.01 * cpsPoints);
 }
 
-// recalc cps by summing items (simple)
-function recalcCpsFromBought(){
-  let totalCps = 0;
+// recalc tps by summing items (simple)
+function recalcTpsFromBought(){
+  let totalTps = 0;
   upgrades.forEach(u => {
     const cnt = state.bought[u.id] || 0;
-    if (u.cps) totalCps += u.cps * cnt;
+    if (u.tps) totalTps += u.tps * cnt;
   });
-  // also auto-clickers are included if cps present
-  state.cps = totalCps;
+  state.tps = totalTps;
 }
 
 // Click handling + floating text
 clickBtn.addEventListener('pointerdown', () => {
   const gained = state.perClick * (state.multiplier || 1);
-  state.total += gained;
-  state.cumulativeTotal += gained;
+  state.tiramisu += gained;
+  state.cumulativeTiramisu += gained;
   showClickGain(gained);
   spawnParticles(8);
   render(true);
   checkAchievements();
+  maybeUnlockMarket();
   save();
 });
 
@@ -485,33 +547,36 @@ function showClickGain(amount){
   setTimeout(()=>div.remove(),900);
 }
 
-// passive CPS tick
+// Passive TPS tick & market tick
 let last = Date.now();
 function tickLoop(){
   const now = Date.now();
   const dt = (now - last) / 1000;
   last = now;
-  // add cps * dt * multiplier
-  if (state.cps > 0){
-    const add = state.cps * dt * (state.multiplier || 1);
-    state.total += add;
-    state.cumulativeTotal += add;
+  // add tps * dt * multiplier
+  if (state.tps > 0){
+    const add = state.tps * dt * (state.multiplier || 1);
+    state.tiramisu += add;
+    state.cumulativeTiramisu += add;
     render();
     checkAchievements();
+    maybeUnlockMarket();
   }
+  // market evolves each second
+  marketTick(dt);
   particleLoop();
   requestAnimationFrame(tickLoop);
 }
 requestAnimationFrame(tickLoop);
 
-// Render UI (not too aggressive but updates promptly)
+// Render UI
 let lastRender = 0;
 function render(force=false){
   const now = performance.now();
   if (!force && now - lastRender < 60) return;
   lastRender = now;
-  totalDisplay.textContent = fmt(Math.floor(state.total));
-  cpsDisplay.textContent = (state.cps * (state.multiplier||1)).toFixed(1);
+  totalDisplay.textContent = fmt(Math.floor(state.tiramisu));
+  cpsDisplay.textContent = (state.tps * (state.multiplier||1)).toFixed(1);
   multDisplay.textContent = (state.multiplier||1).toFixed(2) + 'x';
   perClickEl.textContent = `+${(state.perClick*(state.multiplier||1)).toFixed(2)} / clic`;
   prestigePointsEl.textContent = state.prestigePoints;
@@ -534,14 +599,22 @@ function render(force=false){
     const tier = clickMultiplierTiers[Math.min(lvl, clickMultiplierTiers.length-1)];
     cCost.textContent = tier ? fmt(tier.cost) : '—';
   }
+  // market UI
+  marketPriceEl.textContent = state.market.price.toFixed(2) + ' TT';
+  portfolioSharesEl.textContent = state.portfolio.shares;
+  const pv = state.portfolio.shares * state.market.price;
+  portfolioValueEl.textContent = fmt(Math.floor(pv));
+  avgCostEl.textContent = state.portfolio.shares > 0 ? (state.portfolio.costBasis / Math.max(1, state.portfolio.shares)).toFixed(2) + ' TT' : '—';
+  // locked message
+  marketLockedMsg.textContent = state.market.unlocked ? '' : `Marché verrouillé — Obtenir ${fmt(MARKET_UNLOCK_THRESHOLD)} cumulés pour débloquer. (Actuel: ${fmt(Math.floor(state.cumulativeTiramisu))})`;
 }
 
-// Achievements (simple)
+// Achievements
 const achievements = [
-  { id:'firstClick', title:'Premier clic', condition: s => s.cumulativeTotal >= 1 },
-  { id:'Débutant', title:'100 cookies cumulés', condition: s => s.cumulativeTotal >= 100 },
-  { id:'tenK', title:'10k cumulés', condition: s => s.cumulativeTotal >= 10000 },
-  { id:'GG', title:'100k cumulés', condition: s => s.cumulativeTotal >= 100000 },
+  { id:'firstClick', title:'Premier clic', condition: s => s.cumulativeTiramisu >= 1 },
+  { id:'Débutant', title:'100 tiramisù cumulés', condition: s => s.cumulativeTiramisu >= 100 },
+  { id:'tenK', title:'10k cumulés', condition: s => s.cumulativeTiramisu >= 10000 },
+  { id:'GG', title:'100k cumulés', condition: s => s.cumulativeTiramisu >= 100000 },
   { id:'Premierprestige', title:'Premier prestige', condition: s => s.prestige >= 1 }
 ];
 function checkAchievements(){
@@ -579,7 +652,7 @@ exportBtn.addEventListener('click', () => {
   const blob = new Blob([data], {type:'application/json'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url; a.download = 'clicker-save.json';
+  a.href = url; a.download = 'tiramisu-save.json';
   a.click();
   URL.revokeObjectURL(url);
 });
@@ -591,7 +664,7 @@ importBtn.addEventListener('click', () => {
     // merge carefully
     Object.assign(state, parsed);
     applyTalents();
-    recalcCpsFromBought();
+    recalcTpsFromBought();
     buildShop();
     buildTalents();
     render(true);
@@ -600,7 +673,7 @@ importBtn.addEventListener('click', () => {
   } catch(e){ alert('JSON invalide') }
 });
 
-// particles (light)
+// Particles (light) — reuse your code
 const canvas = document.getElementById('particles');
 const ctx = canvas.getContext('2d');
 let W = canvas.width = canvas.clientWidth * devicePixelRatio;
@@ -631,7 +704,7 @@ function spawnParticles(n){
       vy: -Math.random()*6-1,
       life: Math.random()*0.9+0.5,
       size: Math.random()*7+3,
-      hue: 200 + Math.random()*80
+      hue: 30 + Math.random()*40
     });
   }
 }
@@ -661,7 +734,8 @@ buildTalents();
 render(true);
 renderAchievements();
 applyTalents();
-recalcCpsFromBought();
+recalcTpsFromBought();
+maybeUnlockMarket();
 
 // autosave
 setInterval(save, 5000);
@@ -669,8 +743,136 @@ setInterval(save, 5000);
 // prestige button
 prestigeBtn.addEventListener('click', prestige);
 
+// --- MARKET / TRADING ---
+
+// Market mechanics: random walk with occasional events
+function marketTick(dt){
+  // update only once per ~1 second step (accumulate)
+  const lastPrice = state.market.price;
+  // small random movement
+  const vol = state.market.volatility;
+  // simulate as discrete step per second:
+  state.market.ticksSinceEvent = (state.market.ticksSinceEvent || 0) + dt;
+  if (state.market.ticksSinceEvent >= 1){
+    const steps = Math.floor(state.market.ticksSinceEvent);
+    for (let s=0;s<steps;s++){
+      const rnd = (Math.random() - 0.5) * 2; // -1..1
+      // base change
+      let changePct = rnd * vol;
+      // occasional event
+      if (Math.random() < 0.02){ // 2% chance d'un petit évènement qui secoue le marché
+        const eventMag = (Math.random()*0.15 + 0.05) * (Math.random() < 0.5 ? -1 : 1);
+        changePct += eventMag;
+        notify('Évènement du marché ! Prix impacté');
+      }
+      // apply
+      state.market.price = Math.max(1, state.market.price * (1 + changePct));
+      // record
+      state.market.history.push(state.market.price);
+      if (state.market.history.length > 200) state.market.history.shift();
+    }
+    state.market.ticksSinceEvent = state.market.ticksSinceEvent - steps;
+    // redraw chart
+    drawMarketChart();
+    render(true);
+  }
+}
+
+// unlock market if threshold reached
+function maybeUnlockMarket(){
+  if (!state.market.unlocked && state.cumulativeTiramisu >= MARKET_UNLOCK_THRESHOLD){
+    state.market.unlocked = true;
+    notify('Marché débloqué — tu peux maintenant investir !');
+    render(true);
+    save();
+  }
+}
+
+// Draw market chart (simple sparkline)
+function drawMarketChart(){
+  const cvs = marketChartCanvas;
+  const ctx = cvs.getContext('2d');
+  // size
+  cvs.width = cvs.clientWidth * devicePixelRatio;
+  cvs.height = cvs.clientHeight * devicePixelRatio;
+  ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+  const w = cvs.clientWidth;
+  const h = cvs.clientHeight;
+  ctx.clearRect(0,0,w,h);
+  const data = state.market.history.slice(-Math.floor(w)); // one pixel per step approx
+  if (!data.length) return;
+  const min = Math.min(...data);
+  const max = Math.max(...data);
+  const range = Math.max(1e-6, max - min);
+  ctx.beginPath();
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = '#7c5cff';
+  for (let i=0;i<data.length;i++){
+    const x = (i / (data.length-1)) * w;
+    const y = h - ((data[i] - min)/range) * h;
+    if (i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+  // fill
+  ctx.lineTo(w,h);
+  ctx.lineTo(0,h);
+  ctx.closePath();
+  ctx.globalAlpha = 0.06;
+  ctx.fillStyle = '#7c5cff';
+  ctx.fill();
+  ctx.globalAlpha = 1;
+}
+
+// Trading: buy/sell
+buyShareBtn.addEventListener('click', () => {
+  if (!state.market.unlocked){ notify('Marché verrouillé'); return; }
+  const amt = Math.max(1, Math.floor(Number(tradeAmountInput.value) || 0));
+  const cost = amt * state.market.price;
+  if (state.tiramisu < cost){ notify('Pas assez de tiramisù pour acheter'); return; }
+  // buy
+  state.tiramisu -= cost;
+  state.portfolio.shares += amt;
+  state.portfolio.costBasis += cost;
+  notify(`Acheté ${amt} part(s) à ${state.market.price.toFixed(2)} TT`);
+  render(true);
+  save();
+});
+
+sellShareBtn.addEventListener('click', () => {
+  if (!state.market.unlocked){ notify('Marché verrouillé'); return; }
+  const amt = Math.max(1, Math.floor(Number(tradeAmountInput.value) || 0));
+  if (state.portfolio.shares < amt){ notify('Tu n\'as pas assez de parts'); return; }
+  const revenue = amt * state.market.price;
+  state.tiramisu += revenue;
+  state.portfolio.shares -= amt;
+  // adjust cost basis: simple proportional reduction
+  const avg = state.portfolio.costBasis / Math.max(1, (state.portfolio.shares + amt));
+  state.portfolio.costBasis -= avg * amt;
+  notify(`Vendu ${amt} part(s) à ${state.market.price.toFixed(2)} TT`);
+  render(true);
+  save();
+});
+
+// initial draw
+drawMarketChart();
+
+// --- end market ---
+
 // initial checks
 checkAchievements();
+
+// ensure UI is complete
+function buildEverything(){
+  buildShop();
+  buildTalents();
+  render(true);
+  drawMarketChart();
+}
+buildEverything();
+
+// initial market unlock check
+maybeUnlockMarket();
+
 </script>
 </body>
 </html>
