@@ -681,7 +681,7 @@ function render(force=false){
   const pv = state.portfolio.shares * state.market.price;
   portfolioValueEl.textContent = fmt(Math.floor(pv));
   avgCostEl.textContent = state.portfolio.shares > 0 ? (state.portfolio.costBasis / Math.max(1, state.portfolio.shares)).toFixed(2) + ' TT' : '—';
-  marketLockedMsg.textContent = state.market.unlocked ? '' : `Marché verrouillé — Obtenir ${fmt(MARKET_UNLOCK_THRESHOLD)} cumulés pour débloquer. (Actuel: ${fmt(Math.floor(state.cumulativeTiramisu))})`;
+  marketLockedMsg.textContent = state.market.unlocked ? '' : `Anticiper le marché — Obtenir ${fmt(MARKET_UNLOCK_THRESHOLD)} cumulés pour débloquer. (Actuel: ${fmt(Math.floor(state.cumulativeTiramisu))})`;
 
   // buy market button enabled state
   if (!state.market.unlocked){
