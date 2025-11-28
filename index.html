@@ -4,55 +4,100 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Tiramisù Clicker — Bourse & Prestige</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <style>
-  :root{
-    --bg:#071021;
-    --panel:rgba(11,18,32,0.7);
-    --accent:#7c5cff;
-    --accent2:#3be0c6;
-    --muted:#bfcbdc;
-    --glass: rgba(255,255,255,0.03);
-    --glass-strong: rgba(255,255,255,0.06);
-    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#03101a);color:var(--muted);-webkit-font-smoothing:antialiased}
-  .wrap{
-    max-width:1100px;margin:24px auto;padding:18px;display:grid;grid-template-columns:1fr 420px;gap:16px;
-  }
-  @media (max-width:900px){ .wrap{grid-template-columns:1fr; padding:12px} .right{order:2} }
-  header{display:flex;align-items:center;gap:12px;margin-bottom:6px}
-  .logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:700;color:white;box-shadow:0 6px 20px rgba(0,0,0,0.4)}
-  h1{margin:0;font-size:20px}
-  .card{background:linear-gradient(180deg,var(--panel),var(--glass));border-radius:12px;padding:16px;box-shadow:0 8px 30px rgba(0,0,0,0.5);backdrop-filter: blur(6px)}
-  .play-area{min-height:420px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;position:relative;overflow:hidden}
-  .cookie-btn{width:min(320px,60vw);height:min(320px,60vw);max-width:420px;border-radius:999px;background:linear-gradient(180deg,#fff,#f2f7ff);box-shadow: 0 12px 40px rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;transition:transform .06s linear;border:6px solid rgba(255,255,255,0.06)}
-  .cookie-btn:active{transform:scale(.985)}
-  .cookie-value{font-size:clamp(18px,3.5vw,28px);font-weight:800;color:#ffffff;text-shadow:0 6px 18px rgba(0,0,0,0.6)}
-  .score-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center}
-  .stat{background:var(--glass);padding:10px 12px;border-radius:12px;font-weight:700;color:var(--muted);min-width:120px;text-align:center}
-  .right{display:flex;flex-direction:column;gap:12px}
-  .shop-list{display:grid;gap:10px;max-height:42vh;overflow:auto;padding-right:6px}
-  .upgrade{display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03)}
-  .up-left{flex:1}
-  .up-title{font-weight:800;color:white;margin-bottom:4px}
-  .up-desc{font-size:13px;color:var(--muted)}
-  .up-buy{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
-  .btn{padding:8px 12px;border-radius:8px;background:linear-gradient(90deg,var(--accent),var(--accent2));color:white;font-weight:800;border:none;cursor:pointer}
-  .btn:disabled{opacity:.5;cursor:not-allowed}
-  .small{font-size:12px;color:var(--muted)}
-  .ach-grid{display:flex;gap:8px;flex-wrap:wrap}
-  .ach{min-width:110px;padding:8px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.015),transparent);border:1px solid rgba(255,255,255,0.02);text-align:center}
-  footer{display:flex;justify-content:space-between;align-items:center;margin-top:12px;color:#8fa2b6;font-size:13px}
-  .prestige-panel{display:flex;flex-direction:column;gap:8px}
-  .talent{display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:8px;background:rgba(255,255,255,0.02)}
-  .floating{position:absolute;pointer-events:none;font-weight:800}
-  canvas.particles{position:absolute;inset:0;pointer-events:none;z-index:0}
-  .overlay-ui{position:relative;z-index:2;width:100%}
-  .tier2{border-left:3px solid rgba(255,215,80,0.08);padding-left:10px}
-  .market-canvas{width:100%;height:120px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent); border-radius:8px}
-  .market-row{display:flex;gap:8px;align-items:center;justify-content:space-between}
-  @media (max-width:420px){ .card{padding:12px} .right{gap:10px} }
+:root{
+  --bg:#071021;
+  --panel:rgba(11,18,32,0.7);
+  --accent:#7c5cff;
+  --accent2:#3be0c6;
+  --muted:#bfcbdc;
+  --glass: rgba(255,255,255,0.03);
+  --glass-strong: rgba(255,255,255,0.06);
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:linear-gradient(180deg,var(--bg),#03101a);color:var(--muted);-webkit-font-smoothing:antialiased}
+.wrap{ max-width:1100px;margin:24px auto;padding:18px;display:grid;grid-template-columns:1fr 420px;gap:16px; }
+@media (max-width:900px){ .wrap{grid-template-columns:1fr; padding:12px} .right{order:2} }
+header{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+.logo{width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:700;color:white;box-shadow:0 6px 20px rgba(0,0,0,0.4)}
+h1{margin:0;font-size:20px}
+.card{background:linear-gradient(180deg,var(--panel),var(--glass));border-radius:12px;padding:16px;box-shadow:0 8px 30px rgba(0,0,0,0.5);backdrop-filter: blur(6px);position:relative;overflow:hidden}
+.play-area{min-height:420px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;position:relative;overflow:hidden}
+.cookie-btn{width:min(320px,60vw);height:min(320px,60vw);max-width:420px;border-radius:999px;background:linear-gradient(180deg,#fff,#f2f7ff);box-shadow: 0 12px 40px rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;transition:transform .06s linear;border:6px solid rgba(255,255,255,0.06);position:relative;z-index:3}
+.cookie-btn:active{transform:scale(.985)}
+.cookie-value{font-size:clamp(18px,3.5vw,28px);font-weight:800;color:#ffffff;text-shadow:0 6px 18px rgba(0,0,0,0.6)}
+.score-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center}
+.stat{background:var(--glass);padding:10px 12px;border-radius:12px;font-weight:700;color:var(--muted);min-width:120px;text-align:center}
+.right{display:flex;flex-direction:column;gap:12px}
+.shop-list{display:grid;gap:10px;max-height:42vh;overflow:auto;padding-right:6px}
+.upgrade{display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03)}
+.up-left{flex:1}
+.up-title{font-weight:800;color:white;margin-bottom:4px}
+.up-desc{font-size:13px;color:var(--muted)}
+.up-buy{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.btn{padding:8px 12px;border-radius:8px;background:linear-gradient(90deg,var(--accent),var(--accent2));color:white;font-weight:800;border:none;cursor:pointer}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.small{font-size:12px;color:var(--muted)}
+.ach-grid{display:flex;gap:8px;flex-wrap:wrap}
+.ach{min-width:110px;padding:8px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.015),transparent);border:1px solid rgba(255,255,255,0.02);text-align:center}
+footer{display:flex;justify-content:space-between;align-items:center;margin-top:12px;color:#8fa2b6;font-size:13px}
+.prestige-panel{display:flex;flex-direction:column;gap:8px}
+.talent{display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:8px;background:rgba(255,255,255,0.02)}
+.floating{position:absolute;pointer-events:none;font-weight:800;z-index:5}
+canvas.particles{position:absolute;inset:0;pointer-events:none;z-index:0}
+.overlay-ui{position:relative;z-index:2;width:100%}
+.tier2{border-left:3px solid rgba(255,215,80,0.08);padding-left:10px}
+.market-canvas{width:100%;height:120px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent); border-radius:8px}
+.market-row{display:flex;gap:8px;align-items:center;justify-content:space-between}
+@media (max-width:420px){ .card{padding:12px} .right{gap:10px} }
+
+/* Lock overlay for market */
+.market-locked-overlay{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(180deg, rgba(2,6,10,0.6), rgba(2,6,10,0.45));
+  border-radius:8px;
+  z-index:4;
+  pointer-events:auto;
+  flex-direction:column;
+  gap:8px;
+  padding:12px;
+}
+.lock-ico{
+  width:40px;height:40px;border-radius:8px;background:rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;color:var(--muted);
+  border:1px solid rgba(255,255,255,0.03);
+}
+
+/* nicer +x style */
+.click-gain{
+  position:absolute;
+  pointer-events:none;
+  font-weight:900;
+  color:#fff7d9;
+  text-shadow:0 8px 20px rgba(0,0,0,0.6);
+  transform-origin:center;
+  z-index:6;
+  font-size:20px;
+  will-change:transform,opacity;
+}
+
+/* Blackjack modal */
+.modal-backdrop{
+  position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:9999;
+}
+.modal{
+  width:360px;max-width:95%;background:linear-gradient(180deg,var(--panel),var(--glass));padding:16px;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,0.6);
+}
+.card-row{display:flex;gap:8px;align-items:center;justify-content:space-between}
+.hand{display:flex;gap:6px;align-items:center;min-height:48px}
+
+.badge{background:rgba(255,255,255,0.03);padding:6px 8px;border-radius:8px;font-weight:800}
+.info-muted{font-size:13px;color:var(--muted)}
 </style>
 </head>
 <body>
@@ -105,14 +150,26 @@
       <div class="shop-list" id="shopList" aria-live="polite"></div>
     </div>
 
-    <div class="card">
+    <div class="card" id="marketCard">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
         <strong>Marché des Tiramisù (Bourse)</strong>
         <small class="small">Investir</small>
       </div>
-
-      <div id="marketPanel">
+      <div id="marketPanel" style="position:relative;">
         <canvas id="marketChart" class="market-canvas"></canvas>
+
+        <!-- Lock overlay (montré si marché verrouillé) -->
+        <div id="marketLockOverlay" class="market-locked-overlay" style="display:none">
+          <div class="lock-ico">🔒</div>
+          <div style="font-weight:800">Marché verrouillé</div>
+          <div class="info-muted">Tu peux débloquer le marché maintenant pour :</div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <div class="badge">1&nbsp;000&nbsp;000 TT</div>
+            <button id="buyMarketNow" class="btn">Acheter le marché</button>
+          </div>
+          <div class="small">Ou débloquer automatiquement en cumulant des tiramisùs.</div>
+        </div>
+
         <div style="margin-top:8px" class="market-row">
           <div>
             <div class="small">Prix actuel:</div>
@@ -138,6 +195,26 @@
       </div>
     </div>
 
+    <!-- Blackjack card -->
+    <div class="card" id="blackjackCard">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <strong>Blackjack</strong>
+        <small class="small">Mini-jeu</small>
+      </div>
+      <div id="blackjackPanel">
+        <div style="margin-bottom:8px" class="info-muted">Joue au Blackjack pour parier des tiramisùs. Débloquer / acheter:</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <div class="small">Coût d'achat :</div>
+          <div class="badge">10&nbsp;000&nbsp;000 TT</div>
+          <button id="buyBlackjackBtn" class="btn">Acheter Blackjack</button>
+        </div>
+        <div style="margin-top:10px">
+          <button id="openBlackjackBtn" class="btn" disabled>Ouvrir Blackjack</button>
+          <div id="blackjackLockedMsg" class="small" style="margin-top:6px"></div>
+        </div>
+      </div>
+    </div>
+
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
         <strong>Prestige & Talents</strong>
@@ -149,10 +226,7 @@
           <button id="exportBtn" class="btn" style="background:linear-gradient(90deg,#333,#555)">Exporter JSON</button>
           <button id="importBtn" class="btn" style="background:linear-gradient(90deg,#334,#446)">Importer</button>
         </div>
-        <div style="font-size:13px;color:var(--muted)">
-          Points de Prestige: <strong id="prestigePoints">0</strong>
-        </div>
-
+        <div style="font-size:13px;color:var(--muted)"> Points de Prestige: <strong id="prestigePoints">0</strong> </div>
         <div style="margin-top:8px">
           <div style="font-weight:800;margin-bottom:6px">Arbre de talents (dépense des points)</div>
           <div id="talents"></div>
@@ -172,15 +246,17 @@
   </aside>
 </main>
 
+<!-- Blackjack modal template (hidden initially) -->
+<div id="blackjackModalRoot" style="display:none"></div>
+
 <script>
-/* Tiramisù Clicker — Bourse ajoutée
-   - remplace cookies par tiramisù
-   - nouveaux prix, growth 1.28^n
-   - marché simulé : random walk, graphique, achat/vente de parts
-   - trading unlock à cumulativeTiramisu >= MARKET_UNLOCK_THRESHOLD
+/* Tiramisù Clicker — Version complétée
+   - Ajouts: achat marché (1M), Blackjack achetable (10M), overlay cadenas, meilleure animation +x
 */
 
-// Utils
+/* -------------------------
+   Utils & DOM helpers
+   ------------------------- */
 const qs = s => document.querySelector(s);
 const qsa = s => Array.from(document.querySelectorAll(s));
 const fmt = n => {
@@ -191,7 +267,9 @@ const fmt = n => {
   return Math.floor(n);
 };
 
-// DOM
+/* -------------------------
+   DOM references
+   ------------------------- */
 const totalDisplay = qs('#totalDisplay');
 const cpsDisplay = qs('#cps');
 const multDisplay = qs('#mult');
@@ -215,46 +293,46 @@ const sellShareBtn = qs('#sellShareBtn');
 const tradeAmountInput = qs('#tradeAmount');
 const marketChartCanvas = qs('#marketChart');
 const marketLockedMsg = qs('#marketLockedMsg');
+const marketLockOverlay = qs('#marketLockOverlay');
+const buyMarketNowBtn = qs('#buyMarketNow');
 
-// State
+// Blackjack DOM
+const buyBlackjackBtn = qs('#buyBlackjackBtn');
+const openBlackjackBtn = qs('#openBlackjackBtn');
+const blackjackLockedMsg = qs('#blackjackLockedMsg');
+const blackjackModalRoot = qs('#blackjackModalRoot');
+
+/* -------------------------
+   State & Config
+   ------------------------- */
 let state = {
-  tiramisu: 0,            // current tiramisù
-  perClick: 1,            // tiramisù per click
-  tps: 0,                 // tiramisù per second (CPS renamed)
+  tiramisu: 0,
+  perClick: 1,
+  tps: 0,
   multiplier: 1,
   prestige: 0,
   prestigePoints: 0,
-  bought: {},            // id -> count
+  bought: {},
   achievements: {},
   lastTick: Date.now(),
-  cumulativeTiramisu: 0,  // total tiramisù ever gained
+  cumulativeTiramisu: 0,
   shopDiscount: 1,
-  talents: { // prestige talents purchased
-    clickPower: 0,
-    cpsBoost: 0,
-    discount: 0
-  },
-  // portfolio & market
-  market: {
-    unlocked: false,
-    price: 100,           // price per share in TT (tiramisù)
-    history: [],          // price history for chart
-    volatility: 0.02,     // base volatility (2%)
-    ticksSinceEvent: 0
-  },
-  portfolio: {
-    shares: 0,
-    costBasis: 0          // total tiramisù spent acquiring shares (for avg calc)
-  }
+  talents: { clickPower:0, cpsBoost:0, discount:0 },
+  market: { unlocked: false, price: 100, history: [], volatility: 0.02, ticksSinceEvent: 0 },
+  portfolio: { shares: 0, costBasis: 0 },
+  features: { blackjackUnlocked: false, blackjackBought: false }
 };
 
-// Config
-const LS_KEY = 'tiramisu_clicker_v3';
-const MARKET_UNLOCK_THRESHOLD = 10000; // cumulative tiramisus needed to unlock market (modifiable)
-const PRICE_GROWTH = 1.28; // coût growth exponent
-const INFLATION_PER_OWNED = 0.025; // légère inflation additionnelle
+const LS_KEY = 'tiramisu_clicker_v4';
+const MARKET_PURCHASE_COST = 1_000_000; // prix pour acheter immédiatement la bourse
+const BLACKJACK_PURCHASE_COST = 10_000_000; // prix pour acheter / débloquer blackjack
+const MARKET_UNLOCK_THRESHOLD = 10000; // comportement existant (auto unlock), on garde
+const PRICE_GROWTH = 1.28;
+const INFLATION_PER_OWNED = 0.025;
 
-// Upgrades (revisés — nouveaux coûts & descriptions)
+/* -------------------------
+   Upgrades
+   ------------------------- */
 const baseUpgrades = [
   { id:'cursor', title:'Petit cuiller', desc:'+0.2 TPS', baseCost:25, tps:0.2 },
   { id:'oven', title:'Four', desc:'+1 TPS', baseCost:200, tps:1 },
@@ -262,7 +340,6 @@ const baseUpgrades = [
   { id:'chef', title:'Chef expert', desc:'+1.5 par clic', baseCost:900, clickBonus:1.5 },
   { id:'multiplier', title:'Multiplicateur (clic)', desc:'Augmente la valeur du clic', baseCost:3000, isClickMult:true }
 ];
-
 const tier2Upgrades = [
   { id:'creamFactory', title:'Crème usine', desc:'+40 TPS', baseCost:45000, tps:40 },
   { id:'espressoPlant', title:'Cafetière industrielle', desc:'+400 TPS', baseCost:420000, tps:400 },
@@ -271,17 +348,17 @@ const tier2Upgrades = [
   { id:'autoclick1', title:'Auto-click', desc:'Auto-click 25 TPS', baseCost:100000, tps:25 },
   { id:'autoclick2', title:'Hyper-click', desc:'Auto-click 120 TPS', baseCost:950000, tps:120 }
 ];
-
 const clickMultiplierTiers = [
   { level:1, bonus:1.02, cost:2000 },
   { level:2, bonus:1.03, cost:8000 },
   { level:3, bonus:1.04, cost:30000 },
   { level:4, bonus:1.06, cost:120000 }
 ];
-
 let upgrades = baseUpgrades.concat(tier2Upgrades);
 
-// Load / Save
+/* -------------------------
+   Storage
+   ------------------------- */
 function save(){
   try {
     const toSave = {
@@ -297,7 +374,8 @@ function save(){
       shopDiscount: state.shopDiscount,
       talents: state.talents,
       market: state.market,
-      portfolio: state.portfolio
+      portfolio: state.portfolio,
+      features: state.features
     };
     localStorage.setItem(LS_KEY, JSON.stringify(toSave));
   } catch(e){ console.warn('save failed', e) }
@@ -305,24 +383,25 @@ function save(){
 function load(){
   try {
     const raw = localStorage.getItem(LS_KEY);
-    if (raw) {
+    if (raw){
       const parsed = JSON.parse(raw);
       Object.assign(state, parsed);
-      // if market.history missing or short, ensure minimal history
-      if (!state.market || !state.market.history || state.market.history.length < 10) {
+      // ensure market.history present
+      if (!state.market || !state.market.history || state.market.history.length < 10){
         state.market = state.market || {};
         state.market.price = state.market.price || 100;
         state.market.history = state.market.history || Array.from({length:40}, (_,i)=>state.market.price);
       }
     } else {
-      // initialize market history
       state.market.history = Array.from({length:40}, (_,i)=>state.market.price);
     }
   } catch(e){ console.warn('load failed', e) }
 }
 load();
 
-// cost with growth curve and small inflation depending on how many owned
+/* -------------------------
+   Costs & Shop UI
+   ------------------------- */
 function costFor(u){
   const count = state.bought[u.id] || 0;
   const base = u.baseCost;
@@ -332,34 +411,27 @@ function costFor(u){
   return Math.ceil(base * growth * inflationFactor * discount);
 }
 
-// Build shop UI
 function buildShop(){
   shopList.innerHTML = '';
-  // section: base
   const sectBase = document.createElement('div');
   sectBase.innerHTML = '<div style="font-weight:800;margin-bottom:6px">Bases</div>';
   shopList.appendChild(sectBase);
   baseUpgrades.forEach(u => shopList.appendChild(makeUpgradeElement(u)));
-  // click multiplier special entry
   shopList.appendChild(makeClickMultElement());
-  // section: tier2
   const sect2 = document.createElement('div');
   sect2.innerHTML = '<div style="font-weight:800;margin:10px 0 6px">Tiers avancés</div>';
   shopList.appendChild(sect2);
   tier2Upgrades.forEach(u => {
-    const el = makeUpgradeElement(u);
-    el.classList.add('tier2');
-    shopList.appendChild(el);
+    const el = makeUpgradeElement(u); el.classList.add('tier2'); shopList.appendChild(el);
   });
 }
-
 function makeUpgradeElement(u){
   const wrapper = document.createElement('div');
   wrapper.className = 'upgrade';
   wrapper.innerHTML = `
     <div class="up-left">
-      <div class="up-title">${u.title}</div>
-      <div class="up-desc">${u.desc}</div>
+      <div class="up-title">${escapeHtml(u.title)}</div>
+      <div class="up-desc">${escapeHtml(u.desc)}</div>
       <div class="small">Possédés: <span data-count="${u.id}">${state.bought[u.id]||0}</span></div>
     </div>
     <div class="up-buy">
@@ -371,18 +443,20 @@ function makeUpgradeElement(u){
   btn.addEventListener('click', () => buy(u));
   return wrapper;
 }
-
 function makeClickMultElement(){
   const wrapper = document.createElement('div');
   wrapper.className = 'upgrade';
+  const lvl = state.bought['clickMult'] || 0;
+  const tier = clickMultiplierTiers[Math.min(lvl, clickMultiplierTiers.length-1)];
+  const nextCost = tier ? tier.cost : '—';
   wrapper.innerHTML = `
     <div class="up-left">
       <div class="up-title">Upgrade Clic (Multiplicateur)</div>
       <div class="up-desc">Augmente la valeur du clic (progression par niveau)</div>
-      <div class="small">Niveaux achetés: <span id="clickMultCount">${state.bought['clickMult']||0}</span></div>
+      <div class="small">Niveaux achetés: <span id="clickMultCount">${lvl}</span></div>
     </div>
     <div class="up-buy">
-      <div class="small" id="clickMultCost">${fmt(clickMultiplierTiers[Math.min((state.bought['clickMult']||0), clickMultiplierTiers.length-1)].cost)}</div>
+      <div class="small" id="clickMultCost">${fmt(nextCost)}</div>
       <button class="btn" id="buyClickMult">Acheter</button>
     </div>
   `;
@@ -390,22 +464,18 @@ function makeClickMultElement(){
   return wrapper;
 }
 
-// Purchase logic
+/* -------------------------
+   Purchases
+   ------------------------- */
 function buy(u){
   const c = costFor(u);
   if (state.tiramisu < c){ notify('Pas assez de tiramisù'); return; }
   state.tiramisu -= c;
   state.bought[u.id] = (state.bought[u.id]||0) + 1;
-  // effects
   if (u.tps) state.tps += u.tps;
   if (u.clickBonus) state.perClick += u.clickBonus;
-  // update UI
-  buildShop();
-  render(true);
-  spawnParticles(12);
-  save();
+  buildShop(); render(true); spawnParticles(12); save();
 }
-
 function buyClickMult(){
   const lvl = state.bought['clickMult'] || 0;
   const tier = clickMultiplierTiers[Math.min(lvl, clickMultiplierTiers.length-1)];
@@ -413,28 +483,21 @@ function buyClickMult(){
   if (state.tiramisu < tier.cost){ notify('Pas assez de tiramisù'); return; }
   state.tiramisu -= tier.cost;
   state.bought['clickMult'] = lvl + 1;
-  // apply multiplicative bonus to perClick (not permanent multiplier)
   state.perClick *= tier.bonus;
-  buildShop();
-  render(true);
-  save();
+  buildShop(); render(true); save();
 }
 
-// Prestige system
-function computePrestigeGain(total){
-  // gain formula: points = floor(sqrt(total / 1e6))
-  return Math.floor(Math.sqrt(total / 1_000_000));
-}
-
+/* -------------------------
+   Prestige / Talents
+   ------------------------- */
+function computePrestigeGain(total){ return Math.floor(Math.sqrt(total / 1_000_000)); }
 function prestige(){
   const gain = computePrestigeGain(state.tiramisu);
   if (gain <= 0){ alert('Pas assez de tiramisù pour obtenir des points de Prestige.'); return; }
   if (!confirm(`Réinitialiser le jeu et gagner ${gain} point(s) de Prestige ?`)) return;
   state.prestige += gain;
   state.prestigePoints += gain;
-  // record cumulative
   state.cumulativeTiramisu += state.tiramisu;
-  // reset core progression
   state.tiramisu = 0;
   state.perClick = 1;
   state.tps = 0;
@@ -442,18 +505,15 @@ function prestige(){
   state.bought = {};
   state.achievements = {};
   state.shopDiscount = 1;
-  // talents persist (stored in state.talents)
+  // talents persist as requested
   applyTalents();
   buildShop(); render(true); save();
 }
-
-// Talents
 const talentDefs = [
   { id:'clickPower', title:'Force du clic', desc:'+2% par point (sur perClick)', cost:1 },
   { id:'cpsBoost', title:'Production', desc:'+1% TPS par point', cost:1 },
   { id:'discount', title:'Réductions', desc:'-1% coût boutique par point', cost:1 }
 ];
-
 function buildTalents(){
   talentsEl.innerHTML = '';
   talentDefs.forEach(t => {
@@ -462,8 +522,8 @@ function buildTalents(){
     const count = state.talents[t.id] || 0;
     div.innerHTML = `
       <div>
-        <div style="font-weight:800">${t.title}</div>
-        <div class="small">${t.desc}</div>
+        <div style="font-weight:800">${escapeHtml(t.title)}</div>
+        <div class="small">${escapeHtml(t.desc)}</div>
       </div>
       <div style="text-align:right">
         <div class="small">Coût: ${t.cost} PT</div>
@@ -477,33 +537,29 @@ function buildTalents(){
     talentsEl.appendChild(div);
   });
 }
-
 function buyTalent(id){
   const def = talentDefs.find(t=>t.id===id);
   if (!def) return;
   if (state.prestigePoints < def.cost){ notify('Pas assez de points de Prestige'); return; }
   state.prestigePoints -= def.cost;
   state.talents[id] = (state.talents[id]||0) + 1;
-  applyTalents();
-  buildTalents();
-  render(true);
-  save();
+  applyTalents(); buildTalents(); render(true); save();
 }
-
 function applyTalents(){
-  // discount talent
   const discountPoints = state.talents.discount || 0;
-  state.shopDiscount = Math.max(0.7, 1 - 0.01 * discountPoints); // up to -30% cost
-  // clickPower: increase perClick multiplicatively relative to base 1
+  state.shopDiscount = Math.max(0.7, 1 - 0.01 * discountPoints);
   const clickPoints = state.talents.clickPower || 0;
+  // base perClick reset to 1 then apply talents and items
+  // We'll recompute starting from base 1 and apply bonuses from bought items after
   state.perClick = 1 * (1 + 0.02 * clickPoints);
-  // recalc tps from bought items then apply cps boost
   recalcTpsFromBought();
   const cpsPoints = state.talents.cpsBoost || 0;
   state.tps *= (1 + 0.01 * cpsPoints);
 }
 
-// recalc tps by summing items (simple)
+/* -------------------------
+   Recalc TPS
+   ------------------------- */
 function recalcTpsFromBought(){
   let totalTps = 0;
   upgrades.forEach(u => {
@@ -513,47 +569,69 @@ function recalcTpsFromBought(){
   state.tps = totalTps;
 }
 
-// Click handling + floating text
-clickBtn.addEventListener('pointerdown', () => {
+/* -------------------------
+   Click handling & floating +x
+   ------------------------- */
+clickBtn.addEventListener('pointerdown', (ev) => {
   const gained = state.perClick * (state.multiplier || 1);
   state.tiramisu += gained;
   state.cumulativeTiramisu += gained;
-  showClickGain(gained);
+  showClickGain(gained, ev);
   spawnParticles(8);
   render(true);
   checkAchievements();
   maybeUnlockMarket();
+  maybeUnlockBlackjack();
   save();
 });
 
-// floating +X
-function showClickGain(amount){
+function showClickGain(amount, ev){
+  // Create a floating element near the click pointer if available, otherwise center of button
   const area = document.querySelector('.play-area');
   const div = document.createElement('div');
-  div.className = 'floating';
-  div.style.left = (area.clientWidth/2) + 'px';
-  div.style.top = (area.clientHeight/2) + 'px';
-  div.style.transform = 'translate(-50%,-50%)';
-  div.style.fontSize = '20px';
-  div.style.color = '#ffd86b';
-  div.style.textShadow = '0 8px 20px rgba(0,0,0,0.6)';
-  div.style.transition = 'transform .8s ease-out, opacity .8s ease-out';
+  div.className = 'click-gain';
   div.textContent = '+' + (Math.round(amount*100)/100);
   area.appendChild(div);
+
+  // position
+  let x, y;
+  try {
+    if (ev && ev.clientX){
+      const areaRect = area.getBoundingClientRect();
+      x = ev.clientX - areaRect.left;
+      y = ev.clientY - areaRect.top;
+    } else {
+      const btnRect = clickBtn.getBoundingClientRect();
+      const areaRect = area.getBoundingClientRect();
+      x = (btnRect.left + btnRect.width/2) - areaRect.left;
+      y = (btnRect.top + btnRect.height/2) - areaRect.top;
+    }
+  } catch(e){
+    x = area.clientWidth/2; y = area.clientHeight/2;
+  }
+
+  div.style.left = (x) + 'px';
+  div.style.top = (y) + 'px';
+  div.style.transform = 'translate(-50%,-50%) scale(1)';
+  div.style.opacity = '1';
+
+  // animate: float up + fade
   requestAnimationFrame(()=> {
-    div.style.transform = 'translate(-50%,-160%) scale(1.05)';
+    div.style.transition = 'transform .9s cubic-bezier(.2,.9,.2,1), opacity .9s ease-out';
+    div.style.transform = `translate(-50%,-160%) scale(1.05)`;
     div.style.opacity = '0';
   });
-  setTimeout(()=>div.remove(),900);
+  setTimeout(()=> div.remove(), 1000);
 }
 
-// Passive TPS tick & market tick
+/* -------------------------
+   Ticks, particles, render
+   ------------------------- */
 let last = Date.now();
 function tickLoop(){
   const now = Date.now();
   const dt = (now - last) / 1000;
   last = now;
-  // add tps * dt * multiplier
   if (state.tps > 0){
     const add = state.tps * dt * (state.multiplier || 1);
     state.tiramisu += add;
@@ -561,15 +639,16 @@ function tickLoop(){
     render();
     checkAchievements();
     maybeUnlockMarket();
+    maybeUnlockBlackjack();
   }
-  // market evolves each second
+  // market tick
   marketTick(dt);
   particleLoop();
   requestAnimationFrame(tickLoop);
 }
 requestAnimationFrame(tickLoop);
 
-// Render UI
+/* Rendering throttling */
 let lastRender = 0;
 function render(force=false){
   const now = performance.now();
@@ -580,36 +659,48 @@ function render(force=false){
   multDisplay.textContent = (state.multiplier||1).toFixed(2) + 'x';
   perClickEl.textContent = `+${(state.perClick*(state.multiplier||1)).toFixed(2)} / clic`;
   prestigePointsEl.textContent = state.prestigePoints;
-  // update shop counts/costs
+
   qsa('[data-count]').forEach(el => {
-    const id = el.getAttribute('data-count');
-    el.textContent = state.bought[id] || 0;
+    const id = el.getAttribute('data-count'); el.textContent = state.bought[id] || 0;
   });
   qsa('[data-cost]').forEach(el => {
-    const id = el.getAttribute('data-cost');
-    const u = upgrades.find(x=>x.id===id);
+    const id = el.getAttribute('data-cost'); const u = upgrades.find(x=>x.id===id);
     if (u) el.textContent = fmt(costFor(u));
   });
-  // click mult
-  const cm = qs('#clickMultCount');
-  if (cm) cm.textContent = state.bought['clickMult'] || 0;
-  const cCost = qs('#clickMultCost');
-  if (cCost) {
+
+  const cm = qs('#clickMultCount'); if (cm) cm.textContent = state.bought['clickMult'] || 0;
+  const cCost = qs('#clickMultCost'); if (cCost){
     const lvl = state.bought['clickMult'] || 0;
     const tier = clickMultiplierTiers[Math.min(lvl, clickMultiplierTiers.length-1)];
     cCost.textContent = tier ? fmt(tier.cost) : '—';
   }
+
   // market UI
   marketPriceEl.textContent = state.market.price.toFixed(2) + ' TT';
   portfolioSharesEl.textContent = state.portfolio.shares;
   const pv = state.portfolio.shares * state.market.price;
   portfolioValueEl.textContent = fmt(Math.floor(pv));
   avgCostEl.textContent = state.portfolio.shares > 0 ? (state.portfolio.costBasis / Math.max(1, state.portfolio.shares)).toFixed(2) + ' TT' : '—';
-  // locked message
   marketLockedMsg.textContent = state.market.unlocked ? '' : `Marché verrouillé — Obtenir ${fmt(MARKET_UNLOCK_THRESHOLD)} cumulés pour débloquer. (Actuel: ${fmt(Math.floor(state.cumulativeTiramisu))})`;
+
+  // buy market button enabled state
+  if (!state.market.unlocked){
+    marketLockOverlay.style.display = 'flex';
+    buyMarketNowBtn.disabled = state.tiramisu < MARKET_PURCHASE_COST;
+  } else {
+    marketLockOverlay.style.display = 'none';
+  }
+
+  // Blackjack UI states
+  buyBlackjackBtn.disabled = state.features.blackjackBought || state.tiramisu < BLACKJACK_PURCHASE_COST;
+  openBlackjackBtn.disabled = !state.features.blackjackBought;
+  blackjackLockedMsg.textContent = state.features.blackjackBought ? 'Blackjack débloqué — amuse-toi bien !' : `Acheter pour ${fmt(BLACKJACK_PURCHASE_COST)} TT pour débloquer (cumulés: ${fmt(Math.floor(state.cumulativeTiramisu))})`;
+
 }
 
-// Achievements
+/* -------------------------
+   Achievements
+   ------------------------- */
 const achievements = [
   { id:'firstClick', title:'Premier clic', condition: s => s.cumulativeTiramisu >= 1 },
   { id:'Débutant', title:'100 tiramisù cumulés', condition: s => s.cumulativeTiramisu >= 100 },
@@ -632,12 +723,14 @@ function renderAchievements(){
   achievements.forEach(a=>{
     const div = document.createElement('div');
     div.className = 'ach';
-    div.innerHTML = `<div style="font-weight:800">${a.title}</div><div class="small">${state.achievements[a.id] ? '✓' : '—'}</div>`;
+    div.innerHTML = `<div style="font-weight:800">${escapeHtml(a.title)}</div><div class="small">${state.achievements[a.id] ? '✓' : '—'}</div>`;
     achGrid.appendChild(div);
   });
 }
 
-// notify small toast
+/* -------------------------
+   Notify & small UI utils
+   ------------------------- */
 function notify(msg){
   const t = document.createElement('div');
   t.textContent = msg;
@@ -645,15 +738,17 @@ function notify(msg){
   document.body.appendChild(t);
   setTimeout(()=>t.remove(),2500);
 }
+function escapeHtml(s){ return (s+'').replace(/[&<>"'`]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;'}[c])); }
 
-// Export/Import
+/* -------------------------
+   Export / Import
+   ------------------------- */
 exportBtn.addEventListener('click', () => {
   const data = JSON.stringify(state, null, 2);
   const blob = new Blob([data], {type:'application/json'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url; a.download = 'tiramisu-save.json';
-  a.click();
+  a.href = url; a.download = 'tiramisu-save.json'; a.click();
   URL.revokeObjectURL(url);
 });
 importBtn.addEventListener('click', () => {
@@ -661,19 +756,14 @@ importBtn.addEventListener('click', () => {
   if (!s) return;
   try {
     const parsed = JSON.parse(s);
-    // merge carefully
     Object.assign(state, parsed);
-    applyTalents();
-    recalcTpsFromBought();
-    buildShop();
-    buildTalents();
-    render(true);
-    save();
-    alert('Import OK');
+    applyTalents(); recalcTpsFromBought(); buildShop(); buildTalents(); render(true); save(); alert('Import OK');
   } catch(e){ alert('JSON invalide') }
 });
 
-// Particles (light) — reuse your code
+/* -------------------------
+   Particles
+   ------------------------- */
 const canvas = document.getElementById('particles');
 const ctx = canvas.getContext('2d');
 let W = canvas.width = canvas.clientWidth * devicePixelRatio;
@@ -688,7 +778,6 @@ window.addEventListener('resize', () => {
   canvas.style.height = canvas.clientHeight + 'px';
   ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
 }, {passive:true});
-
 const particles = [];
 function spawnParticles(n){
   const rect = clickBtn.getBoundingClientRect();
@@ -698,8 +787,7 @@ function spawnParticles(n){
   for(let i=0;i<n;i++){
     if (particles.length > 150) break;
     particles.push({
-      x: cx,
-      y: cy,
+      x: cx, y: cy,
       vx: (Math.random()-0.5)*6,
       vy: -Math.random()*6-1,
       life: Math.random()*0.9+0.5,
@@ -713,165 +801,291 @@ function particleLoop(){
   const toRem = [];
   for (let i=0;i<particles.length;i++){
     const p = particles[i];
-    p.x += p.vx;
-    p.vy += 0.18;
-    p.y += p.vy;
-    p.life -= 0.02;
-    ctx.beginPath();
-    ctx.globalAlpha = Math.max(0, p.life);
+    p.x += p.vx; p.vy += 0.18; p.y += p.vy; p.life -= 0.02;
+    ctx.beginPath(); ctx.globalAlpha = Math.max(0, p.life);
     ctx.fillStyle = `hsl(${p.hue},70%,60%)`;
-    ctx.arc(p.x, p.y, p.size * Math.max(0,p.life), 0, Math.PI*2);
-    ctx.fill();
-    ctx.globalAlpha = 1;
+    ctx.arc(p.x, p.y, p.size * Math.max(0,p.life), 0, Math.PI*2); ctx.fill(); ctx.globalAlpha = 1;
     if (p.life <= 0) toRem.push(i);
   }
   for (let i=toRem.length-1;i>=0;i--) particles.splice(toRem[i],1);
 }
 
-// achievements & UI init
-buildShop();
-buildTalents();
-render(true);
-renderAchievements();
-applyTalents();
-recalcTpsFromBought();
-maybeUnlockMarket();
-
-// autosave
-setInterval(save, 5000);
-
-// prestige button
-prestigeBtn.addEventListener('click', prestige);
-
-// --- MARKET / TRADING ---
-
-// Market mechanics: random walk with occasional events
+/* -------------------------
+   Market (random walk) + chart
+   ------------------------- */
 function marketTick(dt){
-  // update only once per ~1 second step (accumulate)
   const lastPrice = state.market.price;
-  // small random movement
   const vol = state.market.volatility;
-  // simulate as discrete step per second:
   state.market.ticksSinceEvent = (state.market.ticksSinceEvent || 0) + dt;
   if (state.market.ticksSinceEvent >= 1){
     const steps = Math.floor(state.market.ticksSinceEvent);
     for (let s=0;s<steps;s++){
-      const rnd = (Math.random() - 0.5) * 2; // -1..1
-      // base change
+      const rnd = (Math.random() - 0.5) * 2;
       let changePct = rnd * vol;
-      // occasional event
-      if (Math.random() < 0.02){ // 2% chance d'un petit évènement qui secoue le marché
+      if (Math.random() < 0.02){
         const eventMag = (Math.random()*0.15 + 0.05) * (Math.random() < 0.5 ? -1 : 1);
         changePct += eventMag;
         notify('Évènement du marché ! Prix impacté');
       }
-      // apply
       state.market.price = Math.max(1, state.market.price * (1 + changePct));
-      // record
       state.market.history.push(state.market.price);
       if (state.market.history.length > 200) state.market.history.shift();
     }
     state.market.ticksSinceEvent = state.market.ticksSinceEvent - steps;
-    // redraw chart
     drawMarketChart();
     render(true);
   }
 }
-
-// unlock market if threshold reached
-function maybeUnlockMarket(){
-  if (!state.market.unlocked && state.cumulativeTiramisu >= MARKET_UNLOCK_THRESHOLD){
-    state.market.unlocked = true;
-    notify('Marché débloqué — tu peux maintenant investir !');
-    render(true);
-    save();
-  }
-}
-
-// Draw market chart (simple sparkline)
 function drawMarketChart(){
   const cvs = marketChartCanvas;
   const ctx = cvs.getContext('2d');
-  // size
   cvs.width = cvs.clientWidth * devicePixelRatio;
   cvs.height = cvs.clientHeight * devicePixelRatio;
   ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
-  const w = cvs.clientWidth;
-  const h = cvs.clientHeight;
+  const w = cvs.clientWidth; const h = cvs.clientHeight;
   ctx.clearRect(0,0,w,h);
-  const data = state.market.history.slice(-Math.floor(w)); // one pixel per step approx
+  const data = state.market.history.slice(-Math.floor(w));
   if (!data.length) return;
-  const min = Math.min(...data);
-  const max = Math.max(...data);
-  const range = Math.max(1e-6, max - min);
-  ctx.beginPath();
-  ctx.lineWidth = 2;
-  ctx.strokeStyle = '#7c5cff';
+  const min = Math.min(...data); const max = Math.max(...data); const range = Math.max(1e-6, max - min);
+  ctx.beginPath(); ctx.lineWidth = 2; ctx.strokeStyle = '#7c5cff';
   for (let i=0;i<data.length;i++){
     const x = (i / (data.length-1)) * w;
     const y = h - ((data[i] - min)/range) * h;
     if (i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
   }
   ctx.stroke();
-  // fill
-  ctx.lineTo(w,h);
-  ctx.lineTo(0,h);
-  ctx.closePath();
-  ctx.globalAlpha = 0.06;
-  ctx.fillStyle = '#7c5cff';
-  ctx.fill();
-  ctx.globalAlpha = 1;
+  ctx.lineTo(w,h); ctx.lineTo(0,h); ctx.closePath(); ctx.globalAlpha = 0.06; ctx.fillStyle = '#7c5cff'; ctx.fill(); ctx.globalAlpha = 1;
 }
 
-// Trading: buy/sell
+/* -------------------------
+   Trading actions
+   ------------------------- */
 buyShareBtn.addEventListener('click', () => {
   if (!state.market.unlocked){ notify('Marché verrouillé'); return; }
   const amt = Math.max(1, Math.floor(Number(tradeAmountInput.value) || 0));
   const cost = amt * state.market.price;
   if (state.tiramisu < cost){ notify('Pas assez de tiramisù pour acheter'); return; }
-  // buy
-  state.tiramisu -= cost;
-  state.portfolio.shares += amt;
-  state.portfolio.costBasis += cost;
+  state.tiramisu -= cost; state.portfolio.shares += amt; state.portfolio.costBasis += cost;
   notify(`Acheté ${amt} part(s) à ${state.market.price.toFixed(2)} TT`);
-  render(true);
-  save();
+  render(true); save();
 });
-
 sellShareBtn.addEventListener('click', () => {
   if (!state.market.unlocked){ notify('Marché verrouillé'); return; }
   const amt = Math.max(1, Math.floor(Number(tradeAmountInput.value) || 0));
-  if (state.portfolio.shares < amt){ notify('Tu n\'as pas assez de parts'); return; }
+  if (state.portfolio.shares < amt){ notify("Tu n'as pas assez de parts"); return; }
   const revenue = amt * state.market.price;
-  state.tiramisu += revenue;
-  state.portfolio.shares -= amt;
-  // adjust cost basis: simple proportional reduction
-  const avg = state.portfolio.costBasis / Math.max(1, (state.portfolio.shares + amt));
+  state.tiramisu += revenue; // profit (or loss based on price vs avg)
+  const avg = state.portfolio.costBasis / Math.max(1, (state.portfolio.shares));
   state.portfolio.costBasis -= avg * amt;
+  state.portfolio.shares -= amt;
   notify(`Vendu ${amt} part(s) à ${state.market.price.toFixed(2)} TT`);
-  render(true);
-  save();
+  render(true); save();
 });
 
-// initial draw
-drawMarketChart();
+/* -------------------------
+   Unlocking logic
+   ------------------------- */
+function maybeUnlockMarket(){
+  if (!state.market.unlocked && state.cumulativeTiramisu >= MARKET_UNLOCK_THRESHOLD){
+    state.market.unlocked = true;
+    notify('Marché débloqué — tu peux maintenant investir !');
+    render(true); save();
+  }
+}
+function maybeUnlockBlackjack(){
+  // blackjack can also be auto-unlocked on cumulative (not requested but harmless)
+  // We'll keep purchase as main flow; optionally auto-unlock at very high cumulative (not used)
+}
 
-// --- end market ---
+/* Buy market button */
 
-// initial checks
-checkAchievements();
+buyMarketNowBtn.addEventListener('click', () => {
+  if (state.market.unlocked){ notify('Marché déjà débloqué'); return; }
+  if (state.tiramisu < MARKET_PURCHASE_COST){ notify('Pas assez de tiramisù pour acheter le marché'); return; }
+  if (!confirm(`Acheter la Bourse maintenant pour ${fmt(MARKET_PURCHASE_COST)} TT ?`)) return;
+  state.tiramisu -= MARKET_PURCHASE_COST;
+  state.market.unlocked = true;
+  notify('Marché acheté et débloqué !');
+  render(true); save();
+});
 
-// ensure UI is complete
+/* Blackjack purchase/opening */
+buyBlackjackBtn.addEventListener('click', () => {
+  if (state.features.blackjackBought){ notify('Blackjack déjà débloqué'); return; }
+  if (state.tiramisu < BLACKJACK_PURCHASE_COST){ notify('Pas assez de tiramisù pour acheter Blackjack'); return; }
+  if (!confirm(`Acheter Blackjack pour ${fmt(BLACKJACK_PURCHASE_COST)} TT ?`)) return;
+  state.tiramisu -= BLACKJACK_PURCHASE_COST;
+  state.features.blackjackBought = true;
+  state.features.blackjackUnlocked = true;
+  notify('Blackjack débloqué — amuse-toi bien !');
+  render(true); save();
+});
+openBlackjackBtn.addEventListener('click', () => {
+  if (!state.features.blackjackBought){ notify('Blackjack verrouillé'); return; }
+  openBlackjackModal();
+});
+
+/* -------------------------
+   Blackjack implementation (simple)
+   ------------------------- */
+function openBlackjackModal(){
+  blackjackModalRoot.innerHTML = '';
+  blackjackModalRoot.style.display = 'block';
+  const backdrop = document.createElement('div');
+  backdrop.className = 'modal-backdrop';
+  backdrop.innerHTML = `
+    <div class="modal" role="dialog" aria-modal="true">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <strong>Blackjack</strong>
+        <button id="closeBJ" class="btn" style="background:linear-gradient(90deg,#444,#666)">Fermer</button>
+      </div>
+      <div class="info-muted" style="margin-bottom:8px">Parie des TT. Gagne si tu bat le dealer (règles simplifiées).</div>
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+        <input id="bjBet" type="number" min="1" value="10" style="flex:1;padding:8px;border-radius:8px;border:none;background:rgba(255,255,255,0.02);color:var(--muted)">
+        <div class="badge">Solde: ${fmt(Math.floor(state.tiramisu))} TT</div>
+      </div>
+      <div style="margin-bottom:8px">
+        <div style="font-weight:800;margin-bottom:6px">Tes cartes</div>
+        <div class="hand" id="playerHand"></div>
+        <div class="small" id="playerVal"></div>
+      </div>
+      <div style="margin-bottom:8px">
+        <div style="font-weight:800;margin-bottom:6px">Dealer</div>
+        <div class="hand" id="dealerHand"></div>
+        <div class="small" id="dealerVal"></div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;justify-content:flex-end">
+        <button id="bjHit" class="btn">Hit</button>
+        <button id="bjStand" class="btn">Stand</button>
+        <button id="bjDeal" class="btn" style="background:linear-gradient(90deg,#2ecc71,#1abc9c)">Deal</button>
+      </div>
+    </div>
+  `;
+  blackjackModalRoot.appendChild(backdrop);
+
+  // elements
+  const closeBJ = qs('#closeBJ', backdrop) || backdrop.querySelector('#closeBJ');
+  const bjBet = backdrop.querySelector('#bjBet');
+  const playerHandEl = backdrop.querySelector('#playerHand');
+  const dealerHandEl = backdrop.querySelector('#dealerHand');
+  const playerVal = backdrop.querySelector('#playerVal');
+  const dealerVal = backdrop.querySelector('#dealerVal');
+  const bjHit = backdrop.querySelector('#bjHit');
+  const bjStand = backdrop.querySelector('#bjStand');
+  const bjDeal = backdrop.querySelector('#bjDeal');
+
+  let deck = [];
+  let player = [], dealer = [];
+  let inRound = false;
+  function newDeck(){ deck = []; const vals = ['A','2','3','4','5','6','7','8','9','10','J','Q','K']; for (let i=0;i<4;i++) vals.forEach(v=>deck.push(v)); shuffle(deck); }
+  function shuffle(a){ for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } }
+  function draw(){ if (!deck.length) newDeck(); return deck.pop(); }
+  function cardValue(card, curTotal){
+    if (card==='A') return 11;
+    if (['J','Q','K'].includes(card)) return 10;
+    return Number(card);
+  }
+  function computeBestTotal(cards){
+    let total = 0; let aces = 0;
+    cards.forEach(c => { if (c==='A'){ aces++; total += 11; } else if (['J','Q','K'].includes(c)) total += 10; else total += Number(c); });
+    while (total > 21 && aces > 0){ total -= 10; aces--; }
+    return total;
+  }
+  function renderHands(){
+    playerHandEl.innerHTML = ''; dealerHandEl.innerHTML = '';
+    player.forEach(c => { const el = document.createElement('div'); el.className='badge'; el.textContent = c; playerHandEl.appendChild(el); });
+    dealer.forEach(c => { const el = document.createElement('div'); el.className='badge'; el.textContent = c; dealerHandEl.appendChild(el); });
+    playerVal.textContent = 'Total: ' + computeBestTotal(player);
+    dealerVal.textContent = 'Total: ' + (inRound ? computeBestTotal([dealer[0]]) + ' + ?' : computeBestTotal(dealer));
+  }
+  function resetRound(){
+    newDeck(); player=[]; dealer=[]; inRound=false;
+    renderHands();
+  }
+  function endRound(result, bet){
+    inRound = false;
+    if (result === 'player') { state.tiramisu += bet*2; notify(`Gagné +${fmt(bet)} TT`); }
+    else if (result === 'push') { state.tiramisu += bet; notify(`Égalité — récupération du pari (${fmt(bet)} TT)`); }
+    else { notify(`Perdu ${fmt(bet)} TT`); }
+    render(true); save();
+  }
+
+  // initial
+  resetRound();
+
+  bjDeal.addEventListener('click', ()=>{
+    const bet = Math.max(1, Math.floor(Number(bjBet.value) || 0));
+    if (bet > state.tiramisu){ notify("Pas assez de tiramisù pour ce pari"); return; }
+    if (inRound){ notify("Round déjà en cours"); return; }
+    // place bet
+    state.tiramisu -= bet; save(); render(true);
+    // deal
+    player = [draw(), draw()];
+    dealer = [draw(), draw()];
+    inRound = true;
+    renderHands();
+    // check blackjack immediate
+    const pTot = computeBestTotal(player);
+    const dTot = computeBestTotal(dealer);
+    if (pTot === 21 && dTot !== 21){ endRound('player', bet); }
+    else if (pTot === 21 && dTot === 21){ endRound('push', bet); }
+  });
+  bjHit.addEventListener('click', ()=>{
+    if (!inRound){ notify("Commence une partie (Deal)"); return; }
+    player.push(draw()); renderHands();
+    const pTot = computeBestTotal(player);
+    if (pTot > 21){
+      // bust
+      const bet = 0; // bet already deducted
+      endRound('dealer', Math.max(1, Math.floor(Number(bjBet.value) || 0)));
+    }
+  });
+  bjStand.addEventListener('click', ()=>{
+    if (!inRound){ notify("Commence une partie (Deal)"); return; }
+    // Dealer draws until >=17
+    while (computeBestTotal(dealer) < 17) dealer.push(draw());
+    renderHands();
+    const pTot = computeBestTotal(player); const dTot = computeBestTotal(dealer);
+    const bet = Math.max(1, Math.floor(Number(bjBet.value) || 0));
+    if (dTot > 21 || pTot > dTot) endRound('player', bet);
+    else if (pTot === dTot) endRound('push', bet);
+    else endRound('dealer', bet);
+  });
+
+  closeBJ.addEventListener('click', () => {
+    blackjackModalRoot.style.display = 'none';
+    blackjackModalRoot.innerHTML = '';
+  });
+}
+
+/* -------------------------
+   Particle loop already set up above
+   ------------------------- */
+
+/* -------------------------
+   Initial setup & start
+   ------------------------- */
 function buildEverything(){
-  buildShop();
-  buildTalents();
-  render(true);
+  buildShop(); buildTalents(); render(true); renderAchievements(); applyTalents(); recalcTpsFromBought();
   drawMarketChart();
 }
 buildEverything();
+setInterval(save, 5000);
+prestigeBtn.addEventListener('click', prestige);
 
-// initial market unlock check
+/* initial checks on locks */
 maybeUnlockMarket();
+render(true);
+
+/* -------------------------
+   Utilities: small helper for query in subtree (for modal)
+   ------------------------- */
+function qsWithin(selector, root){ return root.querySelector(selector); }
+
+/* -------------------------
+   Extra small helper to support modal queries (not used widely)
+   ------------------------- */
+function $(sel, root=document){ return root.querySelector(sel); }
 
 </script>
 </body>
