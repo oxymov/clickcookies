@@ -251,7 +251,7 @@ canvas.particles{position:absolute;inset:0;pointer-events:none;z-index:0}
 
 <script>
 /* Tiramisù Clicker — Version complétée
-   - Ajouts: achat marché (1M), Blackjack achetable (10M), overlay cadenas, meilleure animation +x
+   - Ajouts: achat marché (1M), Blackjack achetable (1M), overlay cadenas, meilleure animation +x
 */
 
 /* -------------------------
@@ -324,8 +324,8 @@ let state = {
 };
 
 const LS_KEY = 'tiramisu_clicker_v4';
-const MARKET_PURCHASE_COST = 1_000_000; // prix pour acheter immédiatement la bourse
-const BLACKJACK_PURCHASE_COST = 10_000_000; // prix pour acheter / débloquer blackjack
+const MARKET_PURCHASE_COST = 100_000; // prix pour acheter immédiatement la bourse
+const BLACKJACK_PURCHASE_COST = 1_000_000; // prix pour acheter / débloquer blackjack
 const MARKET_UNLOCK_THRESHOLD = 10000; // comportement existant (auto unlock), on garde
 const PRICE_GROWTH = 1.28;
 const INFLATION_PER_OWNED = 0.025;
