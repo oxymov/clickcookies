@@ -98,6 +98,29 @@ canvas.particles{position:absolute;inset:0;pointer-events:none;z-index:0}
 
 .badge{background:rgba(255,255,255,0.03);padding:6px 8px;border-radius:8px;font-weight:800}
 .info-muted{font-size:13px;color:var(--muted)}
+
+/* ----------------------------
+   City / Buildings styles
+   ---------------------------- */
+.city-wrap{width:100%;max-width:600px;margin-top:14px;overflow:hidden;border-radius:10px;border:1px solid rgba(255,255,255,0.03);background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);padding:8px}
+.city-scene{display:flex;gap:10px;align-items:end;overflow:auto;padding:8px;height:120px;scrollbar-width:thin}
+.building{width:90px;min-width:70px;height:100px;background:linear-gradient(180deg,#2a2f36,#1a1f24);border-radius:6px;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:8px;box-shadow:0 6px 18px rgba(0,0,0,0.6);transition:transform .25s ease, box-shadow .25s ease}
+.building.pixel { background: repeating-linear-gradient(0deg, rgba(0,0,0,0.02) 0 2px, transparent 2px 4px); } /* subtle pixel feel */
+.building .roof{width:100%;height:22px;background:linear-gradient(180deg,#8b6b4b,#5b3f2a);border-top-left-radius:6px;border-top-right-radius:6px;position:absolute;top:0;left:0;display:flex;align-items:center;justify-content:center;font-weight:900;color:#ffe9c9}
+.building .body{width:78%;height:60px;margin-top:26px;background:linear-gradient(180deg,#d9c9b7,#cdaea0);display:flex;flex-wrap:wrap;align-content:start;justify-content:center;padding:6px;border-radius:4px}
+.window{width:18px;height:12px;background:#222;border-radius:2px;margin:3px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.03)}
+.window.on{background:linear-gradient(180deg,#fff7d9,#ffd27f);box-shadow:0 6px 18px rgba(0,0,0,0.45) inset}
+.building .ground{width:90%;height:8px;background:linear-gradient(90deg,#17202a,#0e1317);border-radius:4px;margin-top:6px}
+.building .countBadge{position:absolute;right:6px;top:8px;background:var(--accent);color:white;padding:4px 6px;border-radius:999px;font-weight:800;font-size:12px;box-shadow:0 6px 20px rgba(124,92,255,0.15)}
+.building.upgraded{transform:translateY(-6px) scale(1.03);box-shadow:0 18px 40px rgba(124,92,255,0.12)}
+.building .label{position:absolute;left:8px;bottom:6px;font-size:12px;color:#101214;background:rgba(255,255,255,0.06);padding:4px 6px;border-radius:6px;font-weight:800}
+
+/* responsive city */
+@media (max-width:720px){
+  .city-wrap{max-width:100%}
+  .building{width:80px;height:90px}
+  .city-scene{height:90px}
+}
 </style>
 </head>
 <body>
@@ -131,6 +154,11 @@ canvas.particles{position:absolute;inset:0;pointer-events:none;z-index:0}
           <div class="small" style="margin-top:6px;color:#4b5563" id="perClick">+1 / clic</div>
         </div>
       </button>
+
+      <!-- CITY SCENE: placé directement sous le gros bouton comme demandé -->
+      <div class="city-wrap" aria-hidden="false" title="Ville — s'améliore avec les upgrades">
+        <div id="cityScene" class="city-scene" role="list" aria-label="Ville des upgrades"></div>
+      </div>
 
       <div class="score-row">
         <div class="stat">TPS: <span id="cps">0</span></div>
@@ -251,7 +279,7 @@ canvas.particles{position:absolute;inset:0;pointer-events:none;z-index:0}
 
 <script>
 /* Tiramisù Clicker — Version complétée
-   - Ajouts: achat marché (1M), Blackjack achetable (1M), overlay cadenas, meilleure animation +x
+   Ajout : Ville horizontale avec bâtiments sous le bouton
 */
 
 /* -------------------------
@@ -282,6 +310,8 @@ const importBtn = qs('#importBtn');
 const achGrid = qs('#achGrid');
 const prestigePointsEl = qs('#prestigePoints');
 const talentsEl = qs('#talents');
+
+const cityScene = qs('#cityScene');
 
 // Market DOM
 const marketPriceEl = qs('#marketPrice');
@@ -465,7 +495,101 @@ function makeClickMultElement(){
 }
 
 /* -------------------------
-   Purchases
+   City-building mapping & helpers
+   ------------------------- */
+const buildingMap = {
+  cursor: { label:'Moulinex', type:'moulin' },
+  oven: { label:'Four', type:'oven' },
+  bakery: { label:'Boulangerie', type:'bakery' },
+  chef: { label:'Chef', type:'chef' },
+  multiplier: { label:'Tour x', type:'tower' },
+  clickMult: { label:'Amplificateur', type:'tower' },
+  creamFactory: { label:'Usine à crème', type:'factory' },
+  espressoPlant: { label:'Cafetière', type:'espresso' },
+  fusionOven: { label:'Four nucléaire', type:'fusion' },
+  dimension: { label:'Dimension', type:'dimension' },
+  autoclick1: { label:'Auto-click', type:'auto' },
+  autoclick2: { label:'Hyper-click', type:'hyper' }
+};
+
+function buildCity(){
+  cityScene.innerHTML = '';
+  // iterate through known upgrade ids in a stable order for nice city layout
+  const order = Object.keys(buildingMap);
+  order.forEach(id => {
+    const count = state.bought[id] || 0;
+    if (count > 0){
+      const el = createBuildingElement(id, count);
+      cityScene.appendChild(el);
+    }
+  });
+}
+
+/** Create building DOM element */
+function createBuildingElement(id, count){
+  const meta = buildingMap[id] || { label:id, type:'generic' };
+  const div = document.createElement('div');
+  div.className = 'building pixel';
+  div.setAttribute('data-id', id);
+  div.setAttribute('role', 'listitem');
+  div.innerHTML = `
+    <div class="roof">${meta.type.slice(0,3).toUpperCase()}</div>
+    <div class="body"></div>
+    <div class="ground"></div>
+    <div class="countBadge">${count}</div>
+    <div class="label">${escapeHtml(meta.label)}</div>
+  `;
+  // fill windows based on count (pseudo-level)
+  populateWindows(div, count);
+  // hover tooltip
+  div.title = `${meta.label} — Possédés : ${count}`;
+  // click -> show info
+  div.addEventListener('click', ()=> {
+    notify(`${meta.label} — Possédés : ${state.bought[id] || 0}`);
+  });
+  return div;
+}
+
+/** update existing building or create new */
+function updateCityBuilding(id){
+  const existing = cityScene.querySelector(`.building[data-id="${id}"]`);
+  const count = state.bought[id] || 0;
+  if (existing){
+    // update badge and windows
+    const badge = existing.querySelector('.countBadge');
+    if (badge) badge.textContent = count;
+    existing.title = `${(buildingMap[id]||{label:id}).label} — Possédés : ${count}`;
+    populateWindows(existing, count);
+    // animate upgrade
+    existing.classList.add('upgraded');
+    setTimeout(()=> existing.classList.remove('upgraded'), 600);
+  } else if (count > 0){
+    const el = createBuildingElement(id, count);
+    // append at end for now
+    cityScene.appendChild(el);
+    // little pop
+    el.classList.add('upgraded');
+    setTimeout(()=> el.classList.remove('upgraded'), 600);
+  }
+}
+
+/** Fill "windows" inside body to convey level (simple pixel look) */
+function populateWindows(buildEl, count){
+  const body = buildEl.querySelector('.body');
+  if (!body) return;
+  body.innerHTML = '';
+  // number of lit windows proportional to count (cap)
+  const totalSlots = 6;
+  const lit = Math.min(totalSlots, Math.floor(Math.sqrt(count)+0.5));
+  for (let i=0;i<totalSlots;i++){
+    const w = document.createElement('div');
+    w.className = 'window' + (i < lit ? ' on' : '');
+    body.appendChild(w);
+  }
+}
+
+/* -------------------------
+   Purchases (override to update city)
    ------------------------- */
 function buy(u){
   const c = costFor(u);
@@ -475,6 +599,8 @@ function buy(u){
   if (u.tps) state.tps += u.tps;
   if (u.clickBonus) state.perClick += u.clickBonus;
   buildShop(); render(true); spawnParticles(12); save();
+  // update city building
+  updateCityBuilding(u.id);
 }
 function buyClickMult(){
   const lvl = state.bought['clickMult'] || 0;
@@ -485,10 +611,12 @@ function buyClickMult(){
   state.bought['clickMult'] = lvl + 1;
   state.perClick *= tier.bonus;
   buildShop(); render(true); save();
+  // map clickMult to a building
+  updateCityBuilding('clickMult');
 }
 
 /* -------------------------
-   Prestige / Talents
+   Prestige / Talents (unchanged)
    ------------------------- */
 function computePrestigeGain(total){ return Math.floor(Math.sqrt(total / 1_000_000)); }
 function prestige(){
@@ -550,7 +678,6 @@ function applyTalents(){
   state.shopDiscount = Math.max(0.7, 1 - 0.01 * discountPoints);
   const clickPoints = state.talents.clickPower || 0;
   // base perClick reset to 1 then apply talents and items
-  // We'll recompute starting from base 1 and apply bonuses from bought items after
   state.perClick = 1 * (1 + 0.02 * clickPoints);
   recalcTpsFromBought();
   const cpsPoints = state.talents.cpsBoost || 0;
@@ -586,14 +713,11 @@ clickBtn.addEventListener('pointerdown', (ev) => {
 });
 
 function showClickGain(amount, ev){
-  // Create a floating element near the click pointer if available, otherwise center of button
   const area = document.querySelector('.play-area');
   const div = document.createElement('div');
   div.className = 'click-gain';
   div.textContent = '+' + (Math.round(amount*100)/100);
   area.appendChild(div);
-
-  // position
   let x, y;
   try {
     if (ev && ev.clientX){
@@ -609,13 +733,10 @@ function showClickGain(amount, ev){
   } catch(e){
     x = area.clientWidth/2; y = area.clientHeight/2;
   }
-
   div.style.left = (x) + 'px';
   div.style.top = (y) + 'px';
   div.style.transform = 'translate(-50%,-50%) scale(1)';
   div.style.opacity = '1';
-
-  // animate: float up + fade
   requestAnimationFrame(()=> {
     div.style.transition = 'transform .9s cubic-bezier(.2,.9,.2,1), opacity .9s ease-out';
     div.style.transform = `translate(-50%,-160%) scale(1.05)`;
@@ -626,143 +747,6 @@ function showClickGain(amount, ev){
 
 /* -------------------------
    Ticks, particles, render
-   ------------------------- */
-let last = Date.now();
-function tickLoop(){
-  const now = Date.now();
-  const dt = (now - last) / 1000;
-  last = now;
-  if (state.tps > 0){
-    const add = state.tps * dt * (state.multiplier || 1);
-    state.tiramisu += add;
-    state.cumulativeTiramisu += add;
-    render();
-    checkAchievements();
-    maybeUnlockMarket();
-    maybeUnlockBlackjack();
-  }
-  // market tick
-  marketTick(dt);
-  particleLoop();
-  requestAnimationFrame(tickLoop);
-}
-requestAnimationFrame(tickLoop);
-
-/* Rendering throttling */
-let lastRender = 0;
-function render(force=false){
-  const now = performance.now();
-  if (!force && now - lastRender < 60) return;
-  lastRender = now;
-  totalDisplay.textContent = fmt(Math.floor(state.tiramisu));
-  cpsDisplay.textContent = (state.tps * (state.multiplier||1)).toFixed(1);
-  multDisplay.textContent = (state.multiplier||1).toFixed(2) + 'x';
-  perClickEl.textContent = `+${(state.perClick*(state.multiplier||1)).toFixed(2)} / clic`;
-  prestigePointsEl.textContent = state.prestigePoints;
-
-  qsa('[data-count]').forEach(el => {
-    const id = el.getAttribute('data-count'); el.textContent = state.bought[id] || 0;
-  });
-  qsa('[data-cost]').forEach(el => {
-    const id = el.getAttribute('data-cost'); const u = upgrades.find(x=>x.id===id);
-    if (u) el.textContent = fmt(costFor(u));
-  });
-
-  const cm = qs('#clickMultCount'); if (cm) cm.textContent = state.bought['clickMult'] || 0;
-  const cCost = qs('#clickMultCost'); if (cCost){
-    const lvl = state.bought['clickMult'] || 0;
-    const tier = clickMultiplierTiers[Math.min(lvl, clickMultiplierTiers.length-1)];
-    cCost.textContent = tier ? fmt(tier.cost) : '—';
-  }
-
-  // market UI
-  marketPriceEl.textContent = state.market.price.toFixed(2) + ' TT';
-  portfolioSharesEl.textContent = state.portfolio.shares;
-  const pv = state.portfolio.shares * state.market.price;
-  portfolioValueEl.textContent = fmt(Math.floor(pv));
-  avgCostEl.textContent = state.portfolio.shares > 0 ? (state.portfolio.costBasis / Math.max(1, state.portfolio.shares)).toFixed(2) + ' TT' : '—';
-  marketLockedMsg.textContent = state.market.unlocked ? '' : `Anticiper le marché — Obtenir ${fmt(MARKET_UNLOCK_THRESHOLD)} cumulés pour débloquer. (Actuel: ${fmt(Math.floor(state.cumulativeTiramisu))})`;
-
-  // buy market button enabled state
-  if (!state.market.unlocked){
-    marketLockOverlay.style.display = 'flex';
-    buyMarketNowBtn.disabled = state.tiramisu < MARKET_PURCHASE_COST;
-  } else {
-    marketLockOverlay.style.display = 'none';
-  }
-
-  // Blackjack UI states
-  buyBlackjackBtn.disabled = state.features.blackjackBought || state.tiramisu < BLACKJACK_PURCHASE_COST;
-  openBlackjackBtn.disabled = !state.features.blackjackBought;
-  blackjackLockedMsg.textContent = state.features.blackjackBought ? 'Blackjack débloqué — amuse-toi bien !' : `Acheter pour ${fmt(BLACKJACK_PURCHASE_COST)} TT pour débloquer (cumulés: ${fmt(Math.floor(state.cumulativeTiramisu))})`;
-
-}
-
-/* -------------------------
-   Achievements
-   ------------------------- */
-const achievements = [
-  { id:'firstClick', title:'Premier clic', condition: s => s.cumulativeTiramisu >= 1 },
-  { id:'Débutant', title:'100 tiramisù cumulés', condition: s => s.cumulativeTiramisu >= 100 },
-  { id:'tenK', title:'10k cumulés', condition: s => s.cumulativeTiramisu >= 10000 },
-  { id:'GG', title:'100k cumulés', condition: s => s.cumulativeTiramisu >= 100000 },
-  { id:'Premierprestige', title:'Premier prestige', condition: s => s.prestige >= 1 }
-];
-function checkAchievements(){
-  achievements.forEach(a=>{
-    if (!state.achievements[a.id] && a.condition(state)){
-      state.achievements[a.id] = true;
-      notify('Succès: ' + a.title);
-      renderAchievements();
-      save();
-    }
-  });
-}
-function renderAchievements(){
-  achGrid.innerHTML = '';
-  achievements.forEach(a=>{
-    const div = document.createElement('div');
-    div.className = 'ach';
-    div.innerHTML = `<div style="font-weight:800">${escapeHtml(a.title)}</div><div class="small">${state.achievements[a.id] ? '✓' : '—'}</div>`;
-    achGrid.appendChild(div);
-  });
-}
-
-/* -------------------------
-   Notify & small UI utils
-   ------------------------- */
-function notify(msg){
-  const t = document.createElement('div');
-  t.textContent = msg;
-  t.style = 'position:fixed;right:18px;top:18px;padding:10px 14px;background:#111;border-radius:8px;color:white;box-shadow:0 10px 30px rgba(0,0,0,0.6);z-index:9999';
-  document.body.appendChild(t);
-  setTimeout(()=>t.remove(),2500);
-}
-function escapeHtml(s){ return (s+'').replace(/[&<>"'`]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;'}[c])); }
-
-/* -------------------------
-   Export / Import
-   ------------------------- */
-exportBtn.addEventListener('click', () => {
-  const data = JSON.stringify(state, null, 2);
-  const blob = new Blob([data], {type:'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = 'tiramisu-save.json'; a.click();
-  URL.revokeObjectURL(url);
-});
-importBtn.addEventListener('click', () => {
-  const s = prompt('Collez le JSON de sauvegarde ici :');
-  if (!s) return;
-  try {
-    const parsed = JSON.parse(s);
-    Object.assign(state, parsed);
-    applyTalents(); recalcTpsFromBought(); buildShop(); buildTalents(); render(true); save(); alert('Import OK');
-  } catch(e){ alert('JSON invalide') }
-});
-
-/* -------------------------
-   Particles
    ------------------------- */
 const canvas = document.getElementById('particles');
 const ctx = canvas.getContext('2d');
@@ -892,13 +876,9 @@ function maybeUnlockMarket(){
     render(true); save();
   }
 }
-function maybeUnlockBlackjack(){
-  // blackjack can also be auto-unlocked on cumulative (not requested but harmless)
-  // We'll keep purchase as main flow; optionally auto-unlock at very high cumulative (not used)
-}
+function maybeUnlockBlackjack(){}
 
 /* Buy market button */
-
 buyMarketNowBtn.addEventListener('click', () => {
   if (state.market.unlocked){ notify('Marché déjà débloqué'); return; }
   if (state.tiramisu < MARKET_PURCHASE_COST){ notify('Pas assez de tiramisù pour acheter le marché'); return; }
@@ -1017,14 +997,11 @@ function openBlackjackModal(){
     const bet = Math.max(1, Math.floor(Number(bjBet.value) || 0));
     if (bet > state.tiramisu){ notify("Pas assez de tiramisù pour ce pari"); return; }
     if (inRound){ notify("Round déjà en cours"); return; }
-    // place bet
     state.tiramisu -= bet; save(); render(true);
-    // deal
     player = [draw(), draw()];
     dealer = [draw(), draw()];
     inRound = true;
     renderHands();
-    // check blackjack immediate
     const pTot = computeBestTotal(player);
     const dTot = computeBestTotal(dealer);
     if (pTot === 21 && dTot !== 21){ endRound('player', bet); }
@@ -1035,14 +1012,11 @@ function openBlackjackModal(){
     player.push(draw()); renderHands();
     const pTot = computeBestTotal(player);
     if (pTot > 21){
-      // bust
-      const bet = 0; // bet already deducted
       endRound('dealer', Math.max(1, Math.floor(Number(bjBet.value) || 0)));
     }
   });
   bjStand.addEventListener('click', ()=>{
     if (!inRound){ notify("Commence une partie (Deal)"); return; }
-    // Dealer draws until >=17
     while (computeBestTotal(dealer) < 17) dealer.push(draw());
     renderHands();
     const pTot = computeBestTotal(player); const dTot = computeBestTotal(dealer);
@@ -1059,8 +1033,143 @@ function openBlackjackModal(){
 }
 
 /* -------------------------
-   Particle loop already set up above
+   Achievements & helpers
    ------------------------- */
+const achievements = [
+  { id:'firstClick', title:'Premier clic', condition: s => s.cumulativeTiramisu >= 1 },
+  { id:'Débutant', title:'100 tiramisù cumulés', condition: s => s.cumulativeTiramisu >= 100 },
+  { id:'tenK', title:'10k cumulés', condition: s => s.cumulativeTiramisu >= 10000 },
+  { id:'GG', title:'100k cumulés', condition: s => s.cumulativeTiramisu >= 100000 },
+  { id:'Premierprestige', title:'Premier prestige', condition: s => s.prestige >= 1 }
+];
+function checkAchievements(){
+  achievements.forEach(a=>{
+    if (!state.achievements[a.id] && a.condition(state)){
+      state.achievements[a.id] = true;
+      notify('Succès: ' + a.title);
+      renderAchievements();
+      save();
+    }
+  });
+}
+function renderAchievements(){
+  achGrid.innerHTML = '';
+  achievements.forEach(a=>{
+    const div = document.createElement('div');
+    div.className = 'ach';
+    div.innerHTML = `<div style="font-weight:800">${escapeHtml(a.title)}</div><div class="small">${state.achievements[a.id] ? '✓' : '—'}</div>`;
+    achGrid.appendChild(div);
+  });
+}
+
+/* -------------------------
+   Notify & small UI utils
+   ------------------------- */
+function notify(msg){
+  const t = document.createElement('div');
+  t.textContent = msg;
+  t.style = 'position:fixed;right:18px;top:18px;padding:10px 14px;background:#111;border-radius:8px;color:white;box-shadow:0 10px 30px rgba(0,0,0,0.6);z-index:9999';
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),2500);
+}
+function escapeHtml(s){ return (s+'').replace(/[&<>"'`]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;'}[c])); }
+
+/* -------------------------
+   Export / Import
+   ------------------------- */
+exportBtn.addEventListener('click', () => {
+  const data = JSON.stringify(state, null, 2);
+  const blob = new Blob([data], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'tiramisu-save.json'; a.click();
+  URL.revokeObjectURL(url);
+});
+importBtn.addEventListener('click', () => {
+  const s = prompt('Collez le JSON de sauvegarde ici :');
+  if (!s) return;
+  try {
+    const parsed = JSON.parse(s);
+    Object.assign(state, parsed);
+    applyTalents(); recalcTpsFromBought(); buildShop(); buildTalents(); render(true); save(); alert('Import OK');
+    // rebuild city according to imported state
+    buildCity();
+  } catch(e){ alert('JSON invalide') }
+});
+
+/* -------------------------
+   Rendering throttling
+   ------------------------- */
+let lastRender = 0;
+function render(force=false){
+  const now = performance.now();
+  if (!force && now - lastRender < 60) return;
+  lastRender = now;
+  totalDisplay.textContent = fmt(Math.floor(state.tiramisu));
+  cpsDisplay.textContent = (state.tps * (state.multiplier||1)).toFixed(1);
+  multDisplay.textContent = (state.multiplier||1).toFixed(2) + 'x';
+  perClickEl.textContent = `+${(state.perClick*(state.multiplier||1)).toFixed(2)} / clic`;
+  prestigePointsEl.textContent = state.prestigePoints;
+
+  qsa('[data-count]').forEach(el => {
+    const id = el.getAttribute('data-count'); el.textContent = state.bought[id] || 0;
+  });
+  qsa('[data-cost]').forEach(el => {
+    const id = el.getAttribute('data-cost'); const u = upgrades.find(x=>x.id===id);
+    if (u) el.textContent = fmt(costFor(u));
+  });
+
+  const cm = qs('#clickMultCount'); if (cm) cm.textContent = state.bought['clickMult'] || 0;
+  const cCost = qs('#clickMultCost'); if (cCost){
+    const lvl = state.bought['clickMult'] || 0;
+    const tier = clickMultiplierTiers[Math.min(lvl, clickMultiplierTiers.length-1)];
+    cCost.textContent = tier ? fmt(tier.cost) : '—';
+  }
+
+  // market UI
+  marketPriceEl.textContent = state.market.price.toFixed(2) + ' TT';
+  portfolioSharesEl.textContent = state.portfolio.shares;
+  const pv = state.portfolio.shares * state.market.price;
+  portfolioValueEl.textContent = fmt(Math.floor(pv));
+  avgCostEl.textContent = state.portfolio.shares > 0 ? (state.portfolio.costBasis / Math.max(1, state.portfolio.shares)).toFixed(2) + ' TT' : '—';
+  marketLockedMsg.textContent = state.market.unlocked ? '' : `Anticiper le marché — Obtenir ${fmt(MARKET_UNLOCK_THRESHOLD)} cumulés pour débloquer. (Actuel: ${fmt(Math.floor(state.cumulativeTiramisu))})`;
+
+  // buy market button enabled state
+  if (!state.market.unlocked){
+    marketLockOverlay.style.display = 'flex';
+    buyMarketNowBtn.disabled = state.tiramisu < MARKET_PURCHASE_COST;
+  } else {
+    marketLockOverlay.style.display = 'none';
+  }
+
+  // Blackjack UI states
+  buyBlackjackBtn.disabled = state.features.blackjackBought || state.tiramisu < BLACKJACK_PURCHASE_COST;
+  openBlackjackBtn.disabled = !state.features.blackjackBought;
+  blackjackLockedMsg.textContent = state.features.blackjackBought ? 'Blackjack débloqué — amuse-toi bien !' : `Acheter pour ${fmt(BLACKJACK_PURCHASE_COST)} TT pour débloquer (cumulés: ${fmt(Math.floor(state.cumulativeTiramisu))})`;
+}
+
+/* -------------------------
+   Game tick loop
+   ------------------------- */
+let last = Date.now();
+function tickLoop(){
+  const now = Date.now();
+  const dt = (now - last) / 1000;
+  last = now;
+  if (state.tps > 0){
+    const add = state.tps * dt * (state.multiplier || 1);
+    state.tiramisu += add;
+    state.cumulativeTiramisu += add;
+    render();
+    checkAchievements();
+    maybeUnlockMarket();
+    maybeUnlockBlackjack();
+  }
+  marketTick(dt);
+  particleLoop();
+  requestAnimationFrame(tickLoop);
+}
+requestAnimationFrame(tickLoop);
 
 /* -------------------------
    Initial setup & start
@@ -1068,6 +1177,8 @@ function openBlackjackModal(){
 function buildEverything(){
   buildShop(); buildTalents(); render(true); renderAchievements(); applyTalents(); recalcTpsFromBought();
   drawMarketChart();
+  // Build city from saved state.bought
+  buildCity();
 }
 buildEverything();
 setInterval(save, 5000);
@@ -1081,10 +1192,6 @@ render(true);
    Utilities: small helper for query in subtree (for modal)
    ------------------------- */
 function qsWithin(selector, root){ return root.querySelector(selector); }
-
-/* -------------------------
-   Extra small helper to support modal queries (not used widely)
-   ------------------------- */
 function $(sel, root=document){ return root.querySelector(sel); }
 
 </script>
