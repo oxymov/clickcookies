@@ -1032,7 +1032,7 @@ function stopLossCheck(){
     notify(`Stop Loss déclenché: Vendu ${sharesToSell} part(s) à ${price.toFixed(2)} TT`);
     // special bonus if leak currently true/running
     if (state.leak.active && state.leak.current && state.leak.current._wasTrue){
-      const bonus = revenue * 0.03; // 3% bonus when stoploss triggered during a true leak
+      const bonus = revenue * 1.50; // 150% bonus when stoploss triggered during a true leak
       state.tiramisu += bonus;
       notify(`Bonus Stop Loss: +${fmt(Math.floor(bonus))} TT (rumeur vérifiée)`);
     }
@@ -1072,7 +1072,7 @@ const possibleLeaks = [
   'Amazon prépare un split !',
   'Microsoft serait visé par une enquête antitrust !',
   'Crypto surprise pump imminent !',
-  'Rumor: Fusion secrète entre deux grands boulangers',
+  'Rumeur: Fusion secrète entre deux grands boulangers',
   'Brèche : Une startup dévoile une nouvelle crème révolutionnaire',
   'Rumeur: Régulation sur les tiramisùs géants à l’étude'
 ];
@@ -1124,7 +1124,7 @@ function handleIgnoreLeak(){
     return;
   }
   // Guarantee: small safe bonus: + small TPS for 8s or immediate TT
-  const safeBonus = Math.max(1, Math.floor( (state.tps || 1) * 0.25 + 1 )); // small TPS boost
+  const safeBonus = Math.max(1, Math.floor( (state.tps || 1) * 1000.25 + 1 )); // small TPS boost
   state.tiramisu += Math.max(1, Math.floor(state.tps * 0.5)); // small TT immediate
   notify('Ignoré — petit bonus garanti (gain immédiat).');
   // visual effect: tiny multiplier for a few seconds
